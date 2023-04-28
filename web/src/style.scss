@@ -1,0 +1,49 @@
+@charset "utf-8";
+
+@import "../node_modules/bulma/bulma.sass";
+
+@import "../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css";
+@import "../node_modules/@fortawesome/fontawesome-free/css/solid.min.css";
+@import "../node_modules/@fortawesome/fontawesome-free/css/brands.min.css";
+
+
+html,body,#app {
+    height: 100%;
+}
+
+.is-vfull {
+    height: 100%;
+}
+
+.is-wfull {
+    width: 100%;
+}
+
+.table thead td, .table thead th {
+    border-width: 0;
+    color: #363636;
+}
+
+.table td, .table th {
+    border-bottom: 1px solid #ebedf1;
+}
+
+.sub-title {margin-bottom: 0.8rem;}
+
+@include desktop {
+    .my-bucket {
+        height: 15rem;
+    }
+}
+
+.pointer {cursor: pointer;}
+
+.warp {white-space:nowrap; word-break:keep-all; overflow:hidden; text-overflow:ellipsis; max-width:24rem; }
+
+.rem20 { max-width:20rem; }
+
+.rem30 { max-width:30rem; }
+
+.ok {color: #48c78e;}
+.warn {color:#f4a271;}
+.err {color: #f14668;}
