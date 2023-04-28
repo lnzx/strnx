@@ -12,7 +12,6 @@ import (
 
 func StartAsync() {
 	s := gocron.NewScheduler(time.UTC)
-	s.SingletonModeAll()
 
 	_, err := s.Every(10).Minutes().Do(dailyEarningsJob)
 	if err != nil {
@@ -27,59 +26,30 @@ func StartAsync() {
 }
 
 func dailyEarningsJob() {
-	now := time.Now().UTC()
-	log.Println("cron daily earnings started...")
-	wallets, err := SelectWallets()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	n := len(wallets)
-	if n == 0 {
-		log.Println("cron daily earnings wallets 0 skip")
-		return
-	}
-	before := tools.GetBeforeDay(now)
-
-	ch := make(chan *WalletResult, n)
-	var wg sync.WaitGroup
-	wg.Add(n)
-
-	for _, wallet := range wallets {
-		go func(addr string) {
-			defer wg.Done()
-			wr, e := FetchWalletEarnings(addr, before, now)
-			if e != nil {
-				log.Println(e)
-				return
-			}
-			ch <- wr
-		}(wallet.Address)
-	}
-
-	wg.Wait()
-	close(ch)
-
-	if len(ch) == 0 {
-		log.Println("cron daily chan 0 skip update")
-		return
-	}
-
-	batch := &pgx.Batch{}
-	for wr := range ch {
+	earningsJob("daily", tools.GetBeforeDay, func(wr *WalletResult, batch *pgx.Batch) {
 		batch.Queue(UPDATE_WALLET_DAILY, wr.Balance, wr.NodeCount, wr.Address)
-	}
-	br := pool.SendBatch(context.Background(), batch)
-	if err = br.Close(); err != nil {
-		log.Println(err)
-		return
-	}
-	log.Printf("cron daily earnings end %s\n", time.Now().UTC().Sub(now).String())
+	})
 }
 
 func monthlyEarningsJob() {
+	earningsJob("monthly", tools.GetMonthRange, func(wr *WalletResult, batch *pgx.Batch) {
+		batch.Queue(UPDATE_WALLET_BALANCE, wr.Balance, wr.Address)
+
+		for _, earn := range wr.Earnings {
+			amount := earn.FilAmount
+			if amount == 0 {
+				continue
+			}
+			date := tools.GetDate(earn.Timestamp)
+			batch.Queue(UPSERT_DAILY_EARN, amount, wr.Address, date, amount)
+		}
+	})
+}
+
+func earningsJob(name string, timeRangeFunc func(time.Time) (time.Time, time.Time), updateFunc func(*WalletResult, *pgx.Batch)) {
 	now := time.Now().UTC()
-	log.Println("cron monthly earnings started...")
+	log.Printf("cron %s earnings started...\n", name)
+
 	wallets, err := SelectWallets()
 	if err != nil {
 		log.Println(err)
@@ -87,10 +57,11 @@ func monthlyEarningsJob() {
 	}
 	n := len(wallets)
 	if n == 0 {
-		log.Println("cron monthly earnings wallets 0 skip")
+		log.Printf("cron %s earnings wallets 0 skip\n", name)
 		return
 	}
-	start, end := tools.GetMonthRange(now)
+
+	start, end := timeRangeFunc(now)
 
 	ch := make(chan *WalletResult, n)
 	var wg sync.WaitGroup
@@ -112,22 +83,13 @@ func monthlyEarningsJob() {
 	close(ch)
 
 	if len(ch) == 0 {
-		log.Println("cron monthly chan 0 skip update")
+		log.Printf("cron %s earnings chan 0 skip\n", name)
 		return
 	}
 
 	batch := &pgx.Batch{}
 	for wr := range ch {
-		batch.Queue(UPDATE_WALLET_BALANCE, wr.Balance, wr.Address)
-
-		for _, earn := range wr.Earnings {
-			amount := earn.FilAmount
-			if amount == 0 {
-				continue
-			}
-			date := tools.GetDate(earn.Timestamp)
-			batch.Queue(UPSERT_DAILY_EARN, amount, wr.Address, date, amount)
-		}
+		updateFunc(wr, batch)
 	}
 
 	br := pool.SendBatch(context.Background(), batch)
@@ -135,5 +97,5 @@ func monthlyEarningsJob() {
 		log.Println(err)
 		return
 	}
-	log.Printf("cron monthly earnings end %s\n", time.Now().UTC().Sub(now).String())
+	log.Printf("cron %s earnings end %s\n", name, time.Now().UTC().Sub(now).String())
 }

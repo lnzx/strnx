@@ -1,36 +1,9 @@
 package tools
 
 import (
-	"math/rand"
 	"strings"
 	"time"
 )
-
-// RandStringBytesMaskImprSrc https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-golang
-func RandStringBytesMaskImprSrc(n int) string {
-	const letterBytes = "abcdefghijklmnopqrstuvwxyz0123456789"
-	const (
-		letterIdxBits = 6                    // 6 bits to represent a letter index
-		letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
-		letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
-	)
-	src := rand.NewSource(time.Now().UnixNano())
-	b := make([]byte, n)
-	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
-	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
-		if remain == 0 {
-			cache, remain = src.Int63(), letterIdxMax
-		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			b[i] = letterBytes[idx]
-			i--
-		}
-		cache >>= letterIdxBits
-		remain--
-	}
-
-	return string(b)
-}
 
 func IfThen(trueVal, defaultVal string) string {
 	if trueVal == "" {
@@ -43,10 +16,10 @@ var (
 	BackOffset = -1 * time.Millisecond
 )
 
-// GetBeforeDay 1945-10-10 12:12:12 --> 1945-10-9 12:12:12
-func GetBeforeDay(t time.Time) time.Time {
+// GetBeforeDay 1945-10-10 12:12:12 --> [1945-10-9 12:12:12, 1945-10-10 12:12:12]
+func GetBeforeDay(t time.Time) (time.Time, time.Time) {
 	before := t.AddDate(0, 0, -1)
-	return before
+	return before, t
 }
 
 // GetDayStart 1945-10-10 12:12:12 --> 1945-10-10 00:00:00
