@@ -54,7 +54,6 @@ func dailyEarningsJob() {
 				return
 			}
 			ch <- wr
-			log.Printf("job daily ok %s %f %s\n", wr.Address, wr.Balance, time.Now().UTC().Sub(now).String())
 		}(wallet.Address)
 	}
 
@@ -106,7 +105,6 @@ func monthlyEarningsJob() {
 				return
 			}
 			ch <- wr
-			log.Printf("job monthly ok %s %f %s\n", addr, wr.Balance, time.Now().UTC().Sub(now).String())
 		}(wallet.Address)
 	}
 
