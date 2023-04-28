@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/sha256"
-	"crypto/subtle"
+	"encoding/hex"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/keyauth/v2"
@@ -13,11 +13,11 @@ import (
 )
 
 var envKey = tools.IfThen(os.Getenv("KEY"), "123456")
-var hashedAPIKey = sha256.Sum256([]byte(envKey))
-
-var tokens = make(map[string]string)
+var hashToken string
 
 func init() {
+	hashKey := sha256.Sum256([]byte(envKey))
+	hashToken = hex.EncodeToString(hashKey[:32])
 	StartAsync()
 }
 
@@ -38,7 +38,6 @@ func main() {
 	}))
 
 	api.Post("/login", login)
-	api.Post("/logout", logout)
 
 	api.Get("/wallets", GetWallets)
 	api.Post("/wallets", AddWallet)
@@ -68,23 +67,13 @@ func login(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"username": user.Username,
-		"token":    hashedAPIKey,
+		"token":    hashToken,
 	})
 }
 
-func logout(c *fiber.Ctx) error {
-	token := c.Get("token")
-	delete(tokens, token)
-	log.Println("logout", token)
-	return nil
-}
-
 func validator(_ *fiber.Ctx, token string) (bool, error) {
-	if token != "" {
-		hashedKey := sha256.Sum256([]byte(token))
-		if subtle.ConstantTimeCompare(hashedAPIKey[:], hashedKey[:]) == 1 {
-			return true, nil
-		}
+	if token != "" && token == hashToken {
+		return true, nil
 	}
 	return false, keyauth.ErrMissingOrMalformedAPIKey
 }

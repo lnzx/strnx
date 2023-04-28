@@ -55,10 +55,8 @@ export default {
     setup() {
       const token = useSession.getToken()
       const logout = () => {
-        api.post('/api/logout').then(res => {
-          useSession.clearToken()
-          location.href = '/'
-        })
+        useSession.clearToken()
+        location.href = '/'
       }
 
       const setting = () => {
