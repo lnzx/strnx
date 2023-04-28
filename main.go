@@ -12,8 +12,8 @@ import (
 	"os"
 )
 
-var EnvKey = tools.IfThen(os.Getenv("KEY"), "123456")
-var hashedAPIKey = sha256.Sum256([]byte(EnvKey))
+var envKey = tools.IfThen(os.Getenv("KEY"), "123456")
+var hashedAPIKey = sha256.Sum256([]byte(envKey))
 
 var tokens = make(map[string]string)
 
@@ -62,7 +62,7 @@ func login(c *fiber.Ctx) error {
 	if err := tools.ValidateStruct(user); err != nil {
 		return fiber.ErrBadRequest
 	}
-	if user.Password != EnvKey {
+	if user.Password != envKey {
 		return fiber.ErrUnauthorized
 	}
 
