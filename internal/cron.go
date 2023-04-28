@@ -48,8 +48,6 @@ func monthlyEarningsJob() {
 
 func earningsJob(name string, timeRangeFunc func(time.Time) (time.Time, time.Time), updateFunc func(*WalletResult, *pgx.Batch)) {
 	now := time.Now().UTC()
-	log.Printf("cron %s earnings started...\n", name)
-
 	wallets, err := SelectWallets()
 	if err != nil {
 		log.Println(err)
@@ -97,5 +95,5 @@ func earningsJob(name string, timeRangeFunc func(time.Time) (time.Time, time.Tim
 		log.Println(err)
 		return
 	}
-	log.Printf("cron %s earnings end %s\n", name, time.Now().UTC().Sub(now).String())
+	log.Printf("cron %s earnings started %s\n", name, time.Now().UTC().Sub(now).String())
 }
