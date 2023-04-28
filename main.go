@@ -24,7 +24,7 @@ func main() {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Static("/", "./")
+	app.Static("/", "./dist")
 
 	api := app.Group("/api", keyauth.New(keyauth.Config{
 		Filter: func(c *fiber.Ctx) bool {
