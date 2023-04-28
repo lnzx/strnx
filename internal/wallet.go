@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -19,6 +20,20 @@ const (
 	UPDATE_WALLET_BALANCE = "UPDATE wallet SET balance = $1 WHERE address = $2"
 	UPSERT_DAILY_EARN     = "INSERT INTO daily(earnings,address,date) VALUES ($1, $2, $3) ON CONFLICT (address,date) DO UPDATE SET earnings = $4"
 )
+
+var client *http.Client
+
+func init() {
+	transport := &http.Transport{
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+		MaxIdleConns:          100,
+		MaxIdleConnsPerHost:   100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 10 * time.Second,
+	}
+	client = &http.Client{Transport: transport}
+}
 
 func GetWallets(c *fiber.Ctx) error {
 	wallets, err := SelectWallets()
@@ -62,14 +77,22 @@ func DelWallets(c *fiber.Ctx) error {
 // FetchWalletEarnings Nodes return nil
 func FetchWalletEarnings(address string, start, end time.Time) (*WalletResult, error) {
 	url := fmt.Sprintf(WALLET_URL, address, start.UnixMilli(), end.UnixMilli())
-	rsp, err := http.Get(url)
+	rsp, err := client.Get(url)
 	if err != nil {
 		if rsp != nil {
-			rsp.Body.Close()
+			err = rsp.Body.Close()
+			if err != nil {
+				return nil, err
+			}
 		}
 		return nil, err
 	}
-	defer rsp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(rsp.Body)
 
 	bytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
