@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/keyauth/v2"
@@ -11,6 +13,7 @@ import (
 )
 
 var EnvKey = tools.IfThen(os.Getenv("KEY"), "123456")
+var hashedAPIKey = sha256.Sum256([]byte(EnvKey))
 
 var tokens = make(map[string]string)
 
@@ -65,7 +68,7 @@ func login(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"username": user.Username,
-		"token":    genToken(user.Username),
+		"token":    hashedAPIKey,
 	})
 }
 
@@ -78,15 +81,10 @@ func logout(c *fiber.Ctx) error {
 
 func validator(_ *fiber.Ctx, token string) (bool, error) {
 	if token != "" {
-		if _, ok := tokens[token]; ok {
+		hashedKey := sha256.Sum256([]byte(token))
+		if subtle.ConstantTimeCompare(hashedAPIKey[:], hashedKey[:]) == 1 {
 			return true, nil
 		}
 	}
 	return false, keyauth.ErrMissingOrMalformedAPIKey
-}
-
-func genToken(value string) string {
-	token := "tk-" + tools.RandStringBytesMaskImprSrc(12)
-	tokens[token] = value
-	return token
 }
