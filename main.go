@@ -48,8 +48,7 @@ func main() {
 	// fix vue history router 404
 	app.Static("*", "./dist/index.html")
 
-	var port = tools.IfThen(os.Getenv("PORT"), "8080")
-	log.Fatal(app.Listen(":" + port))
+	log.Fatal(app.Listen("127.0.0.1:8080"))
 }
 
 func login(c *fiber.Ctx) error {
