@@ -11,7 +11,7 @@ import (
 
 const (
 	SELECT_BALANCE_NODES = "SELECT COALESCE(SUM(nodes[1]), 0) AS active,COALESCE(SUM(nodes[2]),0) AS inactive, COALESCE(CAST(SUM(balance) as DECIMAL(18,2)),0) AS balance FROM wallet"
-	SELECT_DAILY_EARN    = "SELECT date,CAST(SUM(earnings) as DECIMAL(18,2)) as earnings FROM daily WHERE date >= $1 AND date <= $2 GROUP BY date ORDER BY date"
+	SELECT_DAILY_EARN    = "SELECT CAST(SUM(earnings) as DECIMAL(18,2)) as earnings FROM daily WHERE date >= $1 AND date <= $2 GROUP BY date ORDER BY date"
 )
 
 func Summary(c *fiber.Ctx) error {
