@@ -14,3 +14,9 @@ meta:
     </div>
 </template>
 
+
+<style scoped>
+
+.bg-color {background-color:#eef0f4;}
+
+</style>
