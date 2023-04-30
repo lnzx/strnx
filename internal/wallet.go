@@ -74,7 +74,6 @@ func DelWallets(c *fiber.Ctx) error {
 	return nil
 }
 
-// FetchWalletEarnings Nodes return nil
 func FetchWalletEarnings(address string, start, end time.Time) (*WalletResult, error) {
 	url := fmt.Sprintf(WALLET_URL, address, start.UnixMilli(), end.UnixMilli())
 	rsp, err := client.Get(url)
@@ -102,25 +101,5 @@ func FetchWalletEarnings(address string, start, end time.Time) (*WalletResult, e
 		Address: address,
 	}
 	err = json.Unmarshal(bytes, wr)
-	if err != nil {
-		return nil, err
-	}
-	wr.Balance = calculateTotalFilAmount(wr.Earnings)
-	wr.NodeCount = countTotalNodes(wr.Nodes)
-	wr.Nodes = nil
-	return wr, nil
-}
-
-func calculateTotalFilAmount(earnings []Earning) (total float32) {
-	for _, earning := range earnings {
-		total += earning.FilAmount
-	}
-	return total
-}
-
-func countTotalNodes(nodes []Node) (count int) {
-	for _, node := range nodes {
-		count += node.Count
-	}
-	return count
+	return wr, err
 }

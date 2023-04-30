@@ -15,10 +15,10 @@
                 <span class="icon is-small"><i class="fa-solid fa-trash-can"></i></span>
             </button>
             <button class="button is-link is-outlined" @click="updateNode">
-                <span>Update Node</span>
+                <span>Update</span>
                 <span class="icon is-small"><i class="fa-solid fa-plus"></i></span>
             </button>
-            <button class="button is-link is-outlined" @click="openModal">
+            <button class="button is-link is-outlined" @click="nodeModal.open()">
                 <span>Add Node</span>
                 <span class="icon is-small"><i class="fa-solid fa-plus"></i></span>
             </button>
@@ -31,10 +31,8 @@
             <thead style="background: #f8f8fb; font-size:14px;">
                 <tr>
                     <th><input type="checkbox" class="check" @click="checkAll"></th>
-                    <th class="th-color">ID</th>
+                    <th class="th-color">Name</th>
                     <th class="th-color">IP</th>
-                    <th class="th-color">ISP</th>
-                    <th class="th-color">Location</th>
                     <th class="th-color">CPU</th>
                     <th class="th-color">RAM</th>
                     <th class="th-color">Disk</th>
@@ -47,14 +45,12 @@
             <tbody style="color:#757981; font-size:14px;">
                 <tr>
                     <td><input type="checkbox" class="ckbox"></td>
-                    <td><a>423667f8</a></td>
+                    <td><a>Orale-MX-Pay</a></td>
                     <td>44.234.105.210</td>
-                    <td>Digital Ocean</td>
-                    <td>Singapore (SG)</td>
                     <td>6</td>
                     <td>32</td>
                     <td>1TB</td>
-                    <td>10Gbps</td>
+                    <td>4</td>
                     <td>unlimit</td>
                     <td>$300</td>
                     <td>2022/12/20</td>
@@ -70,9 +66,8 @@
 <script setup>
     const route = useRoute()
     const api = useApi()
+    
     const nodeModal = ref()
-    const id = ref('')
-    const ip = ref('')
     const nodes = ref([])
 
     const checkAll = (e) => {
@@ -89,42 +84,25 @@
         }
     }
 
-    const openModal = () => {
-        console.log('click open modal')
-        nodeModal.value.open()
-    }
-
     const updateNode = () => {
         console.log('updateNode')
     }
     
-    const getData = (node) => {
+    const getData = (isRefresh) => {
+        if(!isRefresh){
+
+        }
         api.get('/api/nodes').then(res => {
-            let data = res.data
-            if(node){
-                let filters = []
-                data.forEach(e => {
-                    if(e.address == node){
-                        filters.push(e)
-                    }
-                })
-                nodes.value = filters
-            }else{
-                nodes.value = data
-            }
+          nodes.value = res.data
         })
     }
 
-    getData(route.query.node)
+    getData(true)
 </script>
     
 <style scoped>
-    .warn {color:#f4a271;}
-    .ok {color: #48c78e;}
-    .err {color: #f14668;}
     .check {color:rgba(59,130,246,0.5);}
     .th-color {color: #54565b;}
-    .pointer {cursor: pointer;}
     .i-color {color: #183153;}
 </style>
     

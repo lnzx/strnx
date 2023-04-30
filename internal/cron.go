@@ -27,13 +27,16 @@ func StartAsync() {
 
 func dailyEarningsJob() {
 	earningsJob("daily", tools.GetBeforeDay, func(wr *WalletResult, batch *pgx.Batch) {
-		batch.Queue(UPDATE_WALLET_DAILY, wr.Balance, wr.NodeCount, wr.Address)
+		active, inactive := wr.NodeCounts()
+		balance := wr.Balance()
+		batch.Queue(UPDATE_WALLET_DAILY, balance, []int16{active, inactive}, wr.Address)
 	})
 }
 
 func monthlyEarningsJob() {
 	earningsJob("monthly", tools.GetMonthRange, func(wr *WalletResult, batch *pgx.Batch) {
-		batch.Queue(UPDATE_WALLET_BALANCE, wr.Balance, wr.Address)
+		balance := wr.Balance()
+		batch.Queue(UPDATE_WALLET_BALANCE, balance, wr.Address)
 
 		for _, earn := range wr.Earnings {
 			amount := earn.FilAmount

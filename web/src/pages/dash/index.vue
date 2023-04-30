@@ -23,7 +23,7 @@
               <nav class="level">
                 <div class="level-item has-text-centered">
                   <div>
-                    <p class="title">{{ nodes }}</p>
+                    <p class="title">{{ nodeCount }}</p>
                     <p class="heading">My Nodes</p>
                   </div>
                 </div>
@@ -48,7 +48,7 @@
   
 <script setup>
   const earnings = ref(0)
-  const nodes = ref(0)
+  const nodeCount = ref(0)
   const api = useApi()
 
   const options = {
@@ -71,9 +71,8 @@
 
   api.get('/api/summary').then(res => {
     earnings.value = res.data.earnings
-    nodes.value = res.data.nodes
-    const inactive = res.data.inactive
-    series.value = [res.data.nodes - inactive, inactive]
+    nodeCount.value = res.data.nodes[0] + res.data.nodes[1]
+    series.value = [res.data.nodes[0], res.data.nodes[1]]
     monthSeries.value[0].data = res.data.dailys
     monthOptions.value = {
       title: {
@@ -92,13 +91,5 @@
     }
   })
 </script>
-  
-<style scoped>
-  .havr {display: inline-flex;}
-  .bucket {display: inline-flex;}
-  .fr {float: right;}
-  .icon-green { color: #3AAC59; }
-  .icon-color { color: #183153; }
-  .pd3 {padding-right: .3rem;}
-</style>
+
   

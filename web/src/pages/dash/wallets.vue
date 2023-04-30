@@ -46,7 +46,7 @@ path: "/wallets"
                     <td><input type="checkbox" class="ckbox" :value="w.address" @click="checkOne"></td>
                     <td><a @click="open(w.address)">{{ w.name }}</a></td>
                     <td>{{ w.address }}</td>
-                    <td>{{ w.nodes }}</td>
+                    <td>{{ w.nodes}}</td>
                     <td>{{ w.balance }} FIL</td>
                     <td class="ok">+ {{ w.daily }} FIL</td>
                 </tr>
@@ -64,7 +64,7 @@ const modal = ref()
 const wallets = ref([])
 const api = useApi()
 const isHidden = ref(true)
-var addrs = []
+let addrs = [];
 
 const checkAll = (e) => {
     let $this = e.target;
@@ -98,7 +98,7 @@ const checkOne = (e) => {
         if(index > -1){
             addrs.splice(index, 1)
         }
-        if(addrs.length == 0){
+        if(addrs.length === 0){
             showDel(false)
             document.getElementById('checkAll').checked = false
         }
@@ -106,14 +106,14 @@ const checkOne = (e) => {
 }
 
 const showDel = (hide) => {
-    isHidden.value = (hide == false)
+    isHidden.value = (hide === false)
 }
 
 const del = () => {
     if(confirm('确定删除吗？')){
         api.delete('/api/wallets', {params: {
             'addrs': addrs.toString()
-            }}).then(res => {
+            }}).then(() => {
             addrs = []
             showDel(false)
             refresh()
@@ -141,37 +141,31 @@ const minimize = () => {
     document.getElementById('minimize').classList.add('is-hidden')
 }
 
-const openModal = () => {
-    modal.value.open()
-}
-
 const refresh = () => {
-    getData(route.query.node)
+    getData(true)
 }
 
-const getData = (node) => {
+const getData = (isRefresh) => {
+    if(!isRefresh){
+        let ws = sessionStorage.getItem("wallets");
+        if(ws){
+            wallets.value = JSON.parse(ws)
+            return
+        }
+    }
+    
     api.get('/api/wallets').then(res => {
         let data = res.data
-        if(node){
-            let filters = []
-            data.forEach(e => {
-                if(e.address == node){
-                    filters.push(e)
-                }
-            })
-            wallets.value = filters
-        }else{
-            wallets.value = data
-        }
+        wallets.value = data
+        sessionStorage.setItem("wallets", JSON.stringify(data))
     })
 }
 
-getData(route.query.node)
+getData()
 </script>
 
 <style scoped>
 .check {color:rgba(59,130,246,0.5);}
 .th-color {color: #54565b;}
-.pointer {cursor: pointer;}
 .i-color {color: #183153;}
 </style>

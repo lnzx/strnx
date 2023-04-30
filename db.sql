@@ -10,7 +10,7 @@ CREATE TABLE "public"."wallet" (
       "id" SERIAL PRIMARY KEY,
       "name" VARCHAR(24) not null,
       "address" VARCHAR(41) not null,
-      "nodes" INT2 not null default 0,
+      "nodes" INT2 [] not null DEFAULT '{0,0}',
       "balance" REAL not null default 0,
       "daily" REAL not null default 0
 );

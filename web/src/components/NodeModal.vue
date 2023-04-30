@@ -9,12 +9,12 @@
             <section class="modal-card-body">
                 <div class="field is-horizontal">
                     <div class="field-label is-normal">
-                      <label class="label">ID</label>
+                      <label class="label">Name</label>
                     </div>
                     <div class="field-body">
                       <div class="field">
                         <div class="control">
-                          <input class="input" type="text" maxlength="8" placeholder="ID" v-model.lazy.trim="id">
+                          <input class="input" type="text" maxlength="24" placeholder="Name" v-model.lazy.trim="name">
                         </div>
                       </div>
                     </div>
@@ -27,30 +27,6 @@
                       <div class="field">
                         <div class="control">
                           <input class="input" type="text" maxlength="15" placeholder="IP" v-model.lazy.trim="ip">
-                        </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="field is-horizontal">
-                    <div class="field-label is-normal">
-                      <label class="label">ISP</label>
-                    </div>
-                    <div class="field-body">
-                      <div class="field">
-                        <div class="control">
-                          <input class="input" type="text" maxlength="15" placeholder="ISP" v-model.lazy.trim="isp">
-                        </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="field is-horizontal">
-                    <div class="field-label is-normal">
-                      <label class="label">Location</label>
-                    </div>
-                    <div class="field-body">
-                      <div class="field">
-                        <div class="control">
-                          <input class="input" type="text" maxlength="32" placeholder="Location" v-model.lazy.trim="location">
                         </div>
                       </div>
                     </div>
@@ -167,10 +143,8 @@
 
 <script setup>
     const isOpen = ref(false)
-    const id = ref('')
+    const name = ref('')
     const ip = ref('')
-    const isp = ref('')
-    const location = ref('')
     const cpu = ref()
     const ram = ref()
     const disk = ref()
@@ -191,10 +165,8 @@
         if(!ip.value){
             return;
         }
-        console.log(id.value)
+        console.log(name.value)
         console.log(ip.value)
-        console.log(isp.value)
-        console.log(location.value)
     }
 
     defineExpose({open})

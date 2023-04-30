@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	SELECT_BALANCE_NODES = "SELECT SUM(nodes) AS nodes,CAST(SUM(balance) as DECIMAL(18,2)) AS balance FROM wallet"
-	SELECT_DAILY_EARN    = "SELECT CAST(SUM(earnings) as DECIMAL(18,2)) as earnings FROM daily WHERE date >= $1 AND date <= $2 GROUP BY date ORDER BY date ASC"
+	SELECT_BALANCE_NODES = "SELECT COALESCE(SUM(nodes[1]), 0) AS active,COALESCE(SUM(nodes[2]),0) AS inactive, COALESCE(CAST(SUM(balance) as DECIMAL(18,2)),0) AS balance FROM wallet"
+	SELECT_DAILY_EARN    = "SELECT date,CAST(SUM(earnings) as DECIMAL(18,2)) as earnings FROM daily WHERE date >= $1 AND date <= $2 GROUP BY date ORDER BY date"
 )
 
 func Summary(c *fiber.Ctx) error {
@@ -25,18 +25,20 @@ func Summary(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{
 		"nodes":    nodes,
-		"inactive": 0,
 		"earnings": earnings,
 		"dailys":   dailys,
 		"time":     time.Now().UTC().Format("2006-01-02 15:03:04"),
 	})
 }
 
-func selectBalanceNodes() (earnings float32, nodes int, err error) {
-	err = pool.QueryRow(context.Background(), SELECT_BALANCE_NODES).Scan(&nodes, &earnings)
+func selectBalanceNodes() (earnings float32, nodes []int16, err error) {
+	var active int16
+	var inactive int16
+	err = pool.QueryRow(context.Background(), SELECT_BALANCE_NODES).Scan(&active, &inactive, &earnings)
 	if err != nil {
 		return
 	}
+	nodes = append(nodes, active, inactive)
 	return
 }
 

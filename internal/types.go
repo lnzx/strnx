@@ -10,15 +10,34 @@ type Wallet struct {
 	Address string  `json:"address" validate:"required,len=41"`
 	Balance float32 `json:"balance"`
 	Daily   float32 `json:"daily"`
-	Nodes   int     `json:"nodes"`
+	Nodes   []int16 `json:"nodes"`
 }
 
 type WalletResult struct {
-	Earnings  []Earning `json:"earnings"`
-	Nodes     []Node    `json:"nodes"`
-	Address   string
-	Balance   float32
-	NodeCount int
+	Earnings []Earning `json:"earnings"`
+	Nodes    []Node    `json:"nodes"`
+	Address  string
+}
+
+func (w *WalletResult) Balance() (balance float32) {
+	for _, earn := range w.Earnings {
+		amount := earn.FilAmount
+		if amount > 0 {
+			balance += earn.FilAmount
+		}
+	}
+	return
+}
+
+func (w *WalletResult) NodeCounts() (active, inactive int16) {
+	for _, node := range w.Nodes {
+		if node.State == "active" {
+			active += node.Count
+		} else {
+			inactive += node.Count
+		}
+	}
+	return
 }
 
 type Earning struct {
@@ -27,7 +46,7 @@ type Earning struct {
 }
 
 type Node struct {
-	Count int    `json:"count"`
+	Count int16  `json:"count"`
 	State string `json:"state"`
 }
 
