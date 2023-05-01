@@ -23,7 +23,7 @@
               <nav class="level">
                 <div class="level-item has-text-centered">
                   <div>
-                    <p class="title">{{ nodeCount }}</p>
+                    <p class="title">{{ nodes[0] }} / {{ nodes[1] }}</p>
                     <p class="heading">My Nodes</p>
                   </div>
                 </div>
@@ -48,7 +48,8 @@
   
 <script setup>
   const earnings = ref(0)
-  const nodeCount = ref(0)
+  const nodes = ref([])
+  const inactive = ref(0)
   const api = useApi()
 
   const options = {
@@ -71,7 +72,7 @@
 
   api.get('/api/summary').then(res => {
     earnings.value = res.data.earnings
-    nodeCount.value = res.data.nodes[0] + res.data.nodes[1]
+    nodes.value = res.data.nodes
     series.value = [res.data.nodes[0], res.data.nodes[1]]
     monthSeries.value[0].data = res.data.dailys
     monthOptions.value = {
