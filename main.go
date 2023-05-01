@@ -12,6 +12,10 @@ import (
 	"os"
 )
 
+const (
+	MaxAge = 3600 // 1 hour
+)
+
 var envKey = tools.IfThen(os.Getenv("KEY"), "123456")
 var hashToken string
 
@@ -23,11 +27,14 @@ func init() {
 
 func main() {
 	app := fiber.New(fiber.Config{
+		ETag:        true,
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Static("/", "./dist")
+	app.Static("/", "./dist", fiber.Static{
+		MaxAge: MaxAge,
+	})
 
 	api := app.Group("/api", keyauth.New(keyauth.Config{
 		Filter: func(c *fiber.Ctx) bool {
