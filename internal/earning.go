@@ -8,13 +8,15 @@ import (
 	"github.com/lnzx/strnx/tools"
 	"io"
 	"log"
+	"net/http"
 	"sort"
 	"time"
 )
 
 const (
+	NodeStatusUrl   = "https://orchestrator.strn.pl/stats?sortColumn=id"
 	NodesEarningUrl = "https://uc2x7t32m6qmbscsljxoauwoae0yeipw.lambda-url.us-west-2.on.aws/?filAddress=all&startDate=%d&endDate=%d&step=day"
-	UPSERT_EARN     = "INSERT INTO earn(node_id,earning,status,created) VALUES ($1,$2,$3,$4) ON CONFLICT (node_id) DO UPDATE SET earning = $5"
+	UPSERT_EARN     = "INSERT INTO earn(node_id,earning,status,isp,country,city,region,created) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (node_id) DO UPDATE SET earning = $2"
 )
 
 // FetchNodesEarningJob Query the total earnings of all nodes in the last 30 days
@@ -31,15 +33,22 @@ func FetchNodesEarningJob() {
 		return
 	}
 
-	date := tools.DateFormat(now)
 	tops := GetTopNodesEarning(metrics, 100)
+	nodeMap, err := fetchNodesStatus()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	batch := &pgx.Batch{}
 	for _, node := range tops {
 		if node.FilAmount == 0 {
 			continue
 		}
-		batch.Queue(UPSERT_EARN, node.NodeId, node.FilAmount, node.PayoutStatus, date, node.FilAmount)
+		status := nodeMap[node.NodeId]
+		geo := status.Geoloc
+		batch.Queue(UPSERT_EARN, node.NodeId, node.FilAmount, node.PayoutStatus,
+			status.Speedtest.Isp, geo.Country, geo.City, geo.Region, status.Created)
 	}
 	br := pool.SendBatch(context.Background(), batch)
 	if err = br.Close(); err != nil {
@@ -81,4 +90,43 @@ func GetTopNodesEarning(metrics []PerNodeMetrics, n int) []PerNodeMetrics {
 		return metrics[i].FilAmount > metrics[j].FilAmount
 	})
 	return metrics[0:n]
+}
+
+func fetchNodesStatus() (map[string]Status, error) {
+	req, err := http.NewRequest("GET", NodeStatusUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/json")
+
+	rsp, err := tools.Do(req)
+	if err != nil {
+		if rsp != nil {
+			err = rsp.Body.Close()
+			if err != nil {
+				return nil, err
+			}
+		}
+		return nil, err
+	}
+
+	bytes, err := io.ReadAll(rsp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var stats NodeStatus
+	err = json.Unmarshal(bytes, &stats)
+	if err != nil {
+		return nil, err
+	}
+
+	return ConvertNodesToMap(stats.Nodes), nil
+}
+
+func ConvertNodesToMap(nodes []Status) map[string]Status {
+	nodeMap := make(map[string]Status)
+	for _, node := range nodes {
+		nodeMap[node.Id] = node
+	}
+	return nodeMap
 }

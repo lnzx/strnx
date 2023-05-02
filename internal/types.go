@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 type User struct {
 	Username string `json:"username" validate:"required,min=1"`
 	Password string `json:"password" validate:"required,min=6"`
@@ -59,7 +61,29 @@ type NodeMetrics struct {
 }
 
 type PerNodeMetrics struct {
-	NodeId       string  `json:"nodeId"`
-	FilAmount    float32 `json:"filAmount"`
-	PayoutStatus string  `json:"payoutStatus"`
+	NodeId       string    `json:"nodeId"`
+	FilAmount    float32   `json:"filAmount"`
+	PayoutStatus string    `json:"payoutStatus"`
+	Isp          string    `json:"isp"`
+	Country      string    `json:"country"`
+	City         string    `json:"city"`
+	Region       string    `json:"region"`
+	Created      time.Time `json:"created"`
+}
+
+type NodeStatus struct {
+	Nodes []Status `json:"nodes"`
+}
+
+type Status struct {
+	Id     string `json:"id"`
+	Geoloc struct {
+		Country string `json:"country"`
+		City    string `json:"city"`
+		Region  string `json:"region"`
+	} `json:"geoloc"`
+	Speedtest struct {
+		Isp string `json:"isp"`
+	} `json:"speedtest"`
+	Created time.Time `json:"createdAt"`
 }

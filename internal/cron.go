@@ -22,7 +22,7 @@ func StartAsync() {
 		log.Println(err)
 	}
 
-	_, err = s.Every(1).Day().At("23:50;23:59").Do(FetchNodesEarningJob)
+	_, err = s.Every(1).Day().At("23:50;23:58").Do(FetchNodesEarningJob)
 	if err != nil {
 		log.Println(err)
 	}

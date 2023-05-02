@@ -23,3 +23,7 @@ func init() {
 func Get(url string) (resp *http.Response, err error) {
 	return client.Get(url)
 }
+
+func Do(req *http.Request) (resp *http.Response, err error) {
+	return client.Do(req)
+}

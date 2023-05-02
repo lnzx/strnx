@@ -19,5 +19,9 @@ CREATE TABLE public.earn (
     node_id VARCHAR(36) PRIMARY KEY,
     earning real NOT NULL DEFAULT 0,
     status VARCHAR(9) NOT NULL,
-    created date NOT NULL DEFAULT CURRENT_DATE
+    isp VARCHAR(64),
+    country VARCHAR(32),
+    city VARCHAR(32),
+    region VARCHAR(32),
+    created date
 );
