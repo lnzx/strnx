@@ -1,14 +1,12 @@
 package internal
 
 import (
-	"crypto/tls"
 	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/lnzx/strnx/tools"
 	"io"
 	"log"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -20,20 +18,6 @@ const (
 	UPDATE_WALLET_BALANCE = "UPDATE wallet SET balance = $1 WHERE address = $2"
 	UPSERT_DAILY_EARN     = "INSERT INTO daily(earnings,address,date) VALUES ($1, $2, $3) ON CONFLICT (address,date) DO UPDATE SET earnings = $4"
 )
-
-var client *http.Client
-
-func init() {
-	transport := &http.Transport{
-		TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
-		MaxIdleConns:          100,
-		MaxIdleConnsPerHost:   100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 10 * time.Second,
-	}
-	client = &http.Client{Transport: transport}
-}
 
 func GetWallets(c *fiber.Ctx) error {
 	wallets, err := SelectWallets()
@@ -76,7 +60,7 @@ func DelWallets(c *fiber.Ctx) error {
 
 func FetchWalletEarnings(address string, start, end time.Time) (*WalletResult, error) {
 	url := fmt.Sprintf(WALLET_URL, address, start.UnixMilli(), end.UnixMilli())
-	rsp, err := client.Get(url)
+	rsp, err := tools.Get(url)
 	if err != nil {
 		if rsp != nil {
 			err = rsp.Body.Close()

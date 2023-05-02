@@ -5,13 +5,6 @@ import (
 	"time"
 )
 
-func IfThen(trueVal, defaultVal string) string {
-	if trueVal == "" {
-		return defaultVal
-	}
-	return trueVal
-}
-
 var (
 	BackOffset = -1 * time.Millisecond
 )
@@ -19,6 +12,11 @@ var (
 // GetBeforeDay 1945-10-10 12:12:12 --> [1945-10-9 12:12:12, 1945-10-10 12:12:12]
 func GetBeforeDay(t time.Time) (time.Time, time.Time) {
 	before := t.AddDate(0, 0, -1)
+	return before, t
+}
+
+func GetBeforeDayN(t time.Time, n int) (time.Time, time.Time) {
+	before := t.AddDate(0, 0, -n)
 	return before, t
 }
 
@@ -37,7 +35,7 @@ func GetMonthRange(t time.Time) (time.Time, time.Time) {
 	return start, end
 }
 
-func GetDate(timestamp string) string {
+func GetDateString(timestamp string) string {
 	return strings.Split(timestamp, "T")[0]
 }
 

@@ -22,6 +22,11 @@ func StartAsync() {
 		log.Println(err)
 	}
 
+	_, err = s.Every(1).Day().At("23:50;23:59").Do(FetchNodesEarningJob)
+	if err != nil {
+		log.Println(err)
+	}
+
 	s.StartAsync()
 }
 
@@ -43,7 +48,7 @@ func monthlyEarningsJob() {
 			if amount == 0 {
 				continue
 			}
-			date := tools.GetDate(earn.Timestamp)
+			date := tools.GetDateString(earn.Timestamp)
 			batch.Queue(UPSERT_DAILY_EARN, amount, wr.Address, date, amount)
 		}
 	})

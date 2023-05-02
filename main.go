@@ -27,7 +27,6 @@ func init() {
 
 func main() {
 	app := fiber.New(fiber.Config{
-		ETag:        true,
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})

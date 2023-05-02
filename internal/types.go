@@ -53,3 +53,13 @@ type Node struct {
 type Daily struct {
 	Earnings float32 `json:"earnings"`
 }
+
+type NodeMetrics struct {
+	PerNodeMetrics []PerNodeMetrics `json:"perNodeMetrics"`
+}
+
+type PerNodeMetrics struct {
+	NodeId       string  `json:"nodeId"`
+	FilAmount    float32 `json:"filAmount"`
+	PayoutStatus string  `json:"payoutStatus"`
+}

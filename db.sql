@@ -14,3 +14,10 @@ CREATE TABLE "public"."wallet" (
       "balance" REAL not null default 0,
       "daily" REAL not null default 0
 );
+
+CREATE TABLE public.earn (
+    node_id VARCHAR(36) PRIMARY KEY,
+    earning real NOT NULL DEFAULT 0,
+    status VARCHAR(9) NOT NULL,
+    created date NOT NULL DEFAULT CURRENT_DATE
+);
