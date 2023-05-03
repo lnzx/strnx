@@ -13,7 +13,12 @@ import (
 func StartAsync() {
 	s := gocron.NewScheduler(time.UTC)
 
-	_, err := s.Every(10).Minutes().Do(dailyEarningsJob)
+	_, err := s.Every(5).Minutes().Do(CheckVersionJob)
+	if err != nil {
+		log.Println(err)
+	}
+
+	_, err = s.Every(10).Minutes().Do(dailyEarningsJob)
 	if err != nil {
 		log.Println(err)
 	}
