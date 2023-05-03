@@ -15,10 +15,10 @@ export function makeServer({ environment = "development" } = {}) {
             })
             this.get('/api/wallets', () => {
                 return [
-                    {name:'do-vv',   address:'f14ognplttj7lyag7wug77auazvs2t6wg7xlvepay', balance:270.29, nodes:1, daily:10},
-                    {name:'do-xue',  address:'f1tkr2tz5nojynvu5bs54uzgffluklo65ba3gruba', balance:259.79, nodes:1, daily:11},
-                    {name:'id-west', address:'f1xbawvqfdgu5ptfejxgqx7vbqeypjrgee7i3w4qi', balance:290.29, nodes:2, daily:13},
-                    {name:'id-eno',  address:'f15qiacu22v74vbrvrgcevtt7wezqa5wrxbsjtg6y', balance:260.09, nodes:4, daily:14},
+                    {name:'do-vv',   address:'f14ognplttj7lyag7wug77auazvs2t6wg7xlvepay', balance:270.29, nodes:[10,2], daily:10},
+                    {name:'do-xue',  address:'f1tkr2tz5nojynvu5bs54uzgffluklo65ba3gruba', balance:259.79, nodes:[10,1], daily:11},
+                    {name:'id-west', address:'f1xbawvqfdgu5ptfejxgqx7vbqeypjrgee7i3w4qi', balance:290.29, nodes:[10,0], daily:13},
+                    {name:'id-eno',  address:'f15qiacu22v74vbrvrgcevtt7wezqa5wrxbsjtg6y', balance:260.09, nodes:[100,0], daily:14},
                 ]
             })
             this.post('/api/wallets', (schema, request) => {

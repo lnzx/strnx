@@ -46,7 +46,7 @@ path: "/wallets"
                     <td><input type="checkbox" class="ckbox" :value="w.address" @click="checkOne"></td>
                     <td><a @click="open(w.address)">{{ w.name }}</a></td>
                     <td>{{ w.address }}</td>
-                    <td>{{ w.nodes}}</td>
+                    <td>{{ w.nodes[0]}} <span v-if="w.nodes[1] && w.nodes[1] > 0">/ <span class="has-text-danger">{{ w.nodes[1] }}</span></span></td>
                     <td>{{ w.balance }} FIL</td>
                     <td class="ok">+ {{ w.daily }} FIL</td>
                 </tr>

@@ -23,7 +23,7 @@
               <nav class="level">
                 <div class="level-item has-text-centered">
                   <div>
-                    <p class="title">{{ nodes[0] }} / {{ nodes[1] }}</p>
+                    <p class="title">{{ nodes[0] }} <span v-if="nodes[1] && nodes[1] > 0">/ <span class="has-text-danger">{{ nodes[1] }}</span></span></p>
                     <p class="heading">My Nodes</p>
                   </div>
                 </div>
