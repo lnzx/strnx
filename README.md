@@ -13,3 +13,7 @@ e.g.
 ## layout
 
 ### web 前端页面
+
+详细安装教程:
+
+https://lnzx.notion.site/lnzx/strnx-86737b747d5e4187ad3195624bf80414
