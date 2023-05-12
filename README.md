@@ -14,6 +14,8 @@ e.g.
 
 ### web 前端页面
 
+demo密码: 123456 用户名随便
+
 详细安装教程:
 
 https://lnzx.notion.site/lnzx/strnx-86737b747d5e4187ad3195624bf80414
