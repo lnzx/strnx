@@ -45,8 +45,8 @@
             <tbody style="color:#757981; font-size:14px;">
                 <tr>
                     <td><input type="checkbox" class="ckbox"></td>
-                    <td><a>Orale-MX-Pay</a></td>
-                    <td>44.234.105.210</td>
+                    <td><a>Aws-ID-1</a></td>
+                    <td>44.234.105.21</td>
                     <td>6</td>
                     <td>32</td>
                     <td>1TB</td>
