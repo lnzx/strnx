@@ -35,3 +35,9 @@ strns.fly.dev
 
 https://lnzx.notion.site/lnzx/strnx-86737b747d5e4187ad3195624bf80414
 
+# 计划
+
+1. 加入权限
+2. 增加速率限制
+3. 优化页面大小，按需引用
+4. 完成节点管理：增加节点，一键更新。
