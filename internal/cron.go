@@ -12,13 +12,15 @@ import (
 
 func StartAsync() {
 	s := gocron.NewScheduler(time.UTC)
-
-	_, err := s.Every(5).Minutes().Do(CheckVersionJob)
-	if err != nil {
-		log.Println(err)
+	// 如果配置了发短信,才启动检查版本定时任务
+	if smsApiKey != "" && mobile != "" {
+		_, err := s.Every(5).Minutes().Do(CheckVersionJob)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
-	_, err = s.Every(10).Minutes().Do(dailyEarningsJob)
+	_, err := s.Every(10).Minutes().Do(dailyEarningsJob)
 	if err != nil {
 		log.Println(err)
 	}

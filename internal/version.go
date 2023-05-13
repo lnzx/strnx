@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/goccy/go-json"
 	"github.com/lnzx/strnx/tools"
 	"io"
@@ -10,7 +11,7 @@ import (
 	"os"
 )
 
-var lastVersion = 835
+var lastVersion = 874
 var smsApiKey = os.Getenv("SMS_API_KEY")
 var mobile = os.Getenv("MOBILE")
 
@@ -43,7 +44,9 @@ func CheckVersionJob() {
 	}
 	log.Println("cron found lastVersion:", version.LastVersion)
 	if version.LastVersion > lastVersion {
-		err = sendSms()
+		// 内容不能超过12个字符 Node更新:999
+		msg := fmt.Sprintf("Node更新:%d", version.LastVersion)
+		err = sendSms(msg)
 		if err != nil {
 			log.Println(err)
 			return
@@ -58,10 +61,10 @@ type Version struct {
 	MinVersion  int `json:"minVersion"`
 }
 
-func sendSms() error {
+func sendSms(content string) error {
 	body, err := json.Marshal(map[string]string{
 		"mobile": mobile,
-		"event":  "l1-node有新版本!",
+		"event":  content,
 	})
 
 	req, err := http.NewRequest("POST", notifyUrl, bytes.NewBuffer(body))
