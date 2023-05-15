@@ -14,8 +14,8 @@
                 <span>Delete</span>
                 <span class="icon is-small"><i class="fa-solid fa-trash-can"></i></span>
             </button>
-            <button class="button is-link is-outlined" @click="updateNode">
-                <span>Update</span>
+            <button class="button is-link is-outlined" @click="upgrade">
+                <span>Upgrade</span>
                 <span class="icon is-small"><i class="fa-solid fa-plus"></i></span>
             </button>
             <button class="button is-link is-outlined" @click="nodeModal.open()">
@@ -84,8 +84,8 @@
         }
     }
 
-    const updateNode = () => {
-        console.log('updateNode')
+    const upgrade = () => {
+        console.log('upgrade')
     }
     
     const getData = () => {
