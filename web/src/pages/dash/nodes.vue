@@ -88,16 +88,13 @@
         console.log('updateNode')
     }
     
-    const getData = (isRefresh) => {
-        if(!isRefresh){
-
-        }
+    const getData = () => {
         api.get('/api/nodes').then(res => {
           nodes.value = res.data
         })
     }
 
-    getData(true)
+    getData()
 </script>
     
 <style scoped>

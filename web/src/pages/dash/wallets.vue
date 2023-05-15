@@ -145,19 +145,9 @@ const refresh = () => {
     getData(true)
 }
 
-const getData = (isRefresh) => {
-    if(!isRefresh){
-        let ws = sessionStorage.getItem("wallets");
-        if(ws){
-            wallets.value = JSON.parse(ws)
-            return
-        }
-    }
-    
+const getData = () => {
     api.get('/api/wallets').then(res => {
-        let data = res.data
-        wallets.value = data
-        sessionStorage.setItem("wallets", JSON.stringify(data))
+        wallets.value = res.data
     })
 }
 
