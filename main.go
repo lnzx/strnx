@@ -16,7 +16,7 @@ const (
 	MaxAge = 3600 // 1 hour
 )
 
-var envKey = tools.IfThen(os.Getenv("KEY"), "123456")
+var envKey = tools.IfThen(os.Getenv("KEY") == "", "123456", os.Getenv("KEY"))
 var hashToken string
 
 func init() {

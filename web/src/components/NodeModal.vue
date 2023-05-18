@@ -155,20 +155,23 @@ const add = () => {
     alert("名字和ip不能为空");
     return;
   }
-  let traf =  0
+  let trafficVal =  0
   if(traffic.value){
-    traf = traffic.value
+    trafficVal = traffic.value
   }
-  let band =  0
+  let bandwidthVal =  0
   if(bandwidth.value){
-    band = bandwidth.value
+    bandwidthVal = bandwidth.value
   }
-  let pri =  0
+  let priceVal =  0
   if(price.value){
-    pri = price.value
+    priceVal = price.value
   }
-  api.post('/api/nodes', {name:name.value, ip:ip.value, bandwidth:band, traffic:traf+'TB', price:pri,renew:renew.value}).then(() => {
-    name.value = ''
+  let renewVal = '-'
+  if(renew.value && renew.value.length > 0){
+    renewVal = renew.value
+  }
+  api.post('/api/nodes', {name:name.value, ip:ip.value, bandwidth:bandwidthVal, traffic:trafficVal+'TB', price:priceVal, renew:renewVal}).then(() => {
     ip.value = ''
   })
 };

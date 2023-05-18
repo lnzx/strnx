@@ -102,7 +102,9 @@ type Status struct {
 }
 
 type SysInfo struct {
-	Disk string
-	Cpu  int
-	Ram  string
+	Disk    string
+	Cpu     int
+	Ram     string
+	Traffic string
+	Version string
 }

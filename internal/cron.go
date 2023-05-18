@@ -59,7 +59,6 @@ func nodeStatsJob() {
 	for _, node := range nodes {
 		go func(host string) {
 			go UpdateSysInfo(host)
-			go UpdateNodeInfo(host)
 		}(node.IP)
 	}
 	log.Println("cron node stats job started:", len(nodes))
