@@ -45,13 +45,16 @@ func main() {
 
 	api.Post("/login", login)
 
+	api.Get("/summary", Summary)
+
 	api.Get("/wallets", GetWallets)
 	api.Post("/wallets", AddWallet)
 	api.Delete("/wallets", DelWallets)
 
 	api.Get("/nodes", GetNodes)
-
-	api.Get("/summary", Summary)
+	api.Post("/nodes", AddNodes)
+	api.Delete("/nodes", DeleteNodes)
+	api.Post("/nodes/upgrade", Upgrade)
 
 	// fix vue history router 404
 	app.Static("*", "./dist/index.html")

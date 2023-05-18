@@ -15,10 +15,32 @@ type Wallet struct {
 	Nodes   []int16 `json:"nodes"`
 }
 
+type Daily struct {
+	Earnings float32 `json:"earnings"`
+}
+
+type Node struct {
+	ID        int     `json:"id"`
+	Name      string  `json:"name" validate:"required,min=1"`
+	IP        string  `json:"ip" validate:"required,ipv4"`
+	Bandwidth int     `json:"bandwidth"`
+	Traffic   string  `json:"traffic"`
+	Price     float32 `json:"price"`
+	Renew     string  `json:"renew"`
+	State     string  `json:"state"`
+	Type      string  `json:"type"`
+	CPU       int     `json:"cpu"`
+	Ram       string  `json:"ram"`
+	Disk      string  `json:"disk"`
+}
+
 type WalletResult struct {
 	Earnings []Earning `json:"earnings"`
-	Nodes    []Node    `json:"nodes"`
-	Address  string
+	Nodes    []struct {
+		Count int16  `json:"count"`
+		State string `json:"state"`
+	} `json:"nodes"`
+	Address string
 }
 
 func (w *WalletResult) Balance() (balance float32) {
@@ -45,15 +67,6 @@ func (w *WalletResult) NodeCounts() (active, inactive int16) {
 type Earning struct {
 	FilAmount float32 `json:"filAmount"`
 	Timestamp string  `json:"timestamp"`
-}
-
-type Node struct {
-	Count int16  `json:"count"`
-	State string `json:"state"`
-}
-
-type Daily struct {
-	Earnings float32 `json:"earnings"`
 }
 
 type NodeMetrics struct {
@@ -86,4 +99,10 @@ type Status struct {
 		Isp string `json:"isp"`
 	} `json:"speedtest"`
 	Created time.Time `json:"createdAt"`
+}
+
+type SysInfo struct {
+	Disk string
+	Cpu  int
+	Ram  string
 }

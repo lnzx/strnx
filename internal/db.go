@@ -48,3 +48,12 @@ func Batch(sql string, params []string) error {
 	}
 	return nil
 }
+
+func SelectNodes() (nodes []Node, err error) {
+	rows, err := pool.Query(context.Background(), "SELECT id,name,ip,bandwidth,traffic,price,renew,cpu,ram,disk,state,type FROM node ORDER BY renew")
+	if err != nil {
+		return nil, err
+	}
+	nodes, err = pgx.CollectRows(rows, pgx.RowToStructByName[Node])
+	return nodes, err
+}

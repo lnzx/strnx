@@ -20,6 +20,14 @@ func StartAsync() {
 		}
 	}
 
+	// 如果配置了ssh用户名密码,才启动检查节点服务器信息定时任务
+	if SSH_USER != "" && SSH_PASS != "" {
+		_, err := s.Every(13).Minutes().Do(nodeStatsJob)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
 	_, err := s.Every(10).Minutes().Do(dailyEarningsJob)
 	if err != nil {
 		log.Println(err)
@@ -35,6 +43,25 @@ func StartAsync() {
 	}
 
 	s.StartAsync()
+}
+
+func nodeStatsJob() {
+	nodes, err := SelectNodes()
+	if err != nil {
+		return
+	}
+	if len(nodes) == 0 {
+		log.Println("node stats job 0, skip")
+		return
+	}
+
+	for _, node := range nodes {
+		go func(host string) {
+			go UpdateSysInfo(host)
+			go UpdateNodeInfo(host)
+		}(node.IP)
+	}
+	log.Println("cron node stats job started:", len(nodes))
 }
 
 func dailyEarningsJob() {

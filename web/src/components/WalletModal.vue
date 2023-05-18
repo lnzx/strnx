@@ -55,7 +55,8 @@
 
     const add = () => {
         if(!name.value || !address.value || address.value.length < 41){
-            return
+          alert("名字和钱包不能为空");
+          return
         }
         api.post('/api/wallets', {'name':name.value, 'address':address.value}).then(res => {
           const data = res.data

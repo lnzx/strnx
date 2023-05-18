@@ -25,3 +25,19 @@ CREATE TABLE public.earn (
     region VARCHAR(32),
     created date
 );
+
+CREATE TABLE public.node (
+    id smallserial PRIMARY KEY,
+    name VARCHAR(32) NOT NULL,
+    ip VARCHAR(15) NOT NULL,
+    bandwidth integer NOT NULL DEFAULT 0,
+    traffic VARCHAR(15) DEFAULT '',
+    price real NOT NULL DEFAULT 0,
+    renew VARCHAR(10) DEFAULT '',
+    state VARCHAR(12) DEFAULT '',
+    type VARCHAR(8) DEFAULT '',
+    cpu integer NOT NULL DEFAULT 0,
+    ram VARCHAR(8) DEFAULT '',
+    disk VARCHAR(12) DEFAULT ''
+);
+CREATE UNIQUE INDEX "node_ip" on "public"."node"("ip");

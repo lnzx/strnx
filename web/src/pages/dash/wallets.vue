@@ -19,7 +19,7 @@ path: "/wallets"
                 <span>Add Wallet</span>
                 <span class="icon is-small"><i class="fa-solid fa-plus"></i></span>
             </button>
-            <button class="button is-white" title="刷新" @click="refresh">
+            <button class="button is-white" title="刷新" @click="getData">
                 <span class="icon is-small i-color"><i class="fa-solid fa-arrows-rotate"></i></span>
             </button>
             <button class="button is-white" title="全屏" @click="maximize" id="maximize">
@@ -94,8 +94,8 @@ const checkOne = (e) => {
             addrs.push($this.value)
         }
     }else{
-        var index = addrs.indexOf($this.value)
-        if(index > -1){
+      const index = addrs.indexOf($this.value);
+      if(index > -1){
             addrs.splice(index, 1)
         }
         if(addrs.length === 0){
@@ -116,7 +116,7 @@ const del = () => {
             }}).then(() => {
             addrs = []
             showDel(false)
-            refresh()
+            getData()
         })
     }
 }
@@ -139,10 +139,6 @@ const minimize = () => {
     document.getElementById('title').classList.remove('is-hidden')
     document.getElementById('maximize').classList.remove('is-hidden')
     document.getElementById('minimize').classList.add('is-hidden')
-}
-
-const refresh = () => {
-    getData(true)
 }
 
 const getData = () => {
