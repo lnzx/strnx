@@ -7,7 +7,7 @@ path: "/nodes"
 
     <div class="table-container box px-0 py-2">
       <div class="px-1" style="padding-bottom: 0.5rem">
-        <span>ALL (5)</span>
+        <span>ALL ({{ nodes.length }})</span>
 
         <div class="buttons are-small is-pulled-right">
           <button class="button is-danger is-outlined" :class="{ 'is-hidden': isHidden }" title="删除" @click="del">
