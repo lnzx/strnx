@@ -25,7 +25,7 @@ var SSH_PASS = os.Getenv("SSH_PASS")
 func GetSysInfo(host string) (*SysInfo, error) {
 	output, err := Cmd(host, SysInfoCmd, true)
 	if err != nil {
-		log.Println(err)
+		log.Println("GetSysInfo error:", err)
 		return nil, err
 	}
 	// 99G 12G 13% 4 7.6Gi
@@ -60,7 +60,7 @@ func Cmd(host, cmd string, result bool) (string, error) {
 	defer func(client *ssh.Client) {
 		e := client.Close()
 		if e != nil {
-			log.Println(e)
+			log.Println("ssh Cmd client close error:", e)
 		}
 	}(client)
 
@@ -71,7 +71,7 @@ func Cmd(host, cmd string, result bool) (string, error) {
 	defer func(session *ssh.Session) {
 		e := session.Close()
 		if e != nil {
-			log.Println(e)
+			log.Println("ssh Cmd session close error:", e)
 		}
 	}(session)
 
@@ -81,6 +81,7 @@ func Cmd(host, cmd string, result bool) (string, error) {
 
 		err = session.Run(cmd)
 		if err != nil {
+			log.Println("ssh Cmd session Run error:", err)
 			return "", err
 		}
 		output := strings.TrimSpace(buf.String())

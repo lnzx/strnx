@@ -24,7 +24,7 @@ func StartAsync() {
 	if SSH_USER != "" && SSH_PASS != "" {
 		_, err := s.Every(13).Minutes().Do(nodeStatsJob)
 		if err != nil {
-			log.Println(err)
+			log.Println("node stats job error:", err)
 		}
 	}
 
@@ -48,6 +48,7 @@ func StartAsync() {
 func nodeStatsJob() {
 	nodes, err := SelectNodes()
 	if err != nil {
+		log.Println("node stats job error:", err)
 		return
 	}
 	if len(nodes) == 0 {

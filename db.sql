@@ -38,6 +38,6 @@ CREATE TABLE public.node (
     type VARCHAR(8) DEFAULT '',
     cpu integer NOT NULL DEFAULT 0,
     ram VARCHAR(8) DEFAULT '',
-    disk VARCHAR(12) DEFAULT ''
+    disk VARCHAR(24) DEFAULT ''
 );
 CREATE UNIQUE INDEX "node_ip" on "public"."node"("ip");
