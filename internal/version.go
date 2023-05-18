@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var lastVersion = 874
+var lastVersion = 883
 var smsApiKey = os.Getenv("SMS_API_KEY")
 var mobile = os.Getenv("MOBILE")
 
