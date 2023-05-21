@@ -32,7 +32,10 @@ func StartAsync() {
 	if err != nil {
 		log.Println(err)
 	}
-	_, err = s.Every(27).Minutes().Do(monthlyEarningsJob)
+	_, err = s.Every(27).Minutes().Do(func() {
+		time.Sleep(30 * time.Second)
+		monthlyEarningsJob()
+	})
 	if err != nil {
 		log.Println(err)
 	}
@@ -112,8 +115,10 @@ func earningsJob(name string, timeRangeFunc func(time.Time) (time.Time, time.Tim
 			defer wg.Done()
 			wr, e := FetchWalletEarnings(addr, start, end)
 			if e != nil {
-				log.Println(err)
+				log.Println(e)
 				return
+			} else {
+				log.Printf("%s %s %f", name, addr, wr.Balance())
 			}
 			ch <- wr
 		}(wallet.Address)
