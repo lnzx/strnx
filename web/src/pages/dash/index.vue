@@ -80,6 +80,7 @@ const options = {
 const series = ref([]);
 
 api.get("/api/summary").then((res) => {
+  earnings.value = res.data.earnings;
   nodes.value = res.data.nodes;
   series.value = [res.data.nodes[0], res.data.nodes[1]];
 
