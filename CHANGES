@@ -1,5 +1,5 @@
 0.0.1 / 2023-05-22
-增加pool表(流量池)
+增加pool表(流量池), 见 db.sql
 表node增加pool_id字段 (ALTER TABLE "public"."node" ADD COLUMN "pool_id" INT4 NULL DEFAULT 0;)
 表node增加node_id字段 (ALTER TABLE "public"."node" ADD COLUMN "node_id" varchar(36) DEFAULT '';)
 钱包界面和表增加group字段 (ALTER TABLE "public"."wallet" ADD COLUMN "group" varchar(8) DEFAULT '-';)
@@ -9,6 +9,8 @@
 删除获取其它节点收益job(暂时好像没啥用)
 查询收益增加日志
 
+手动批量添加钱包分组sql,请把下面的 组名字 替换成自己想要的名字, XXX替换成要去钱包名字里查找的字符串, 找到的所有记录都会使用设置好的组名。
+update wallet set "group" = '组名字' where name like '%XXX%';
 
 
 
