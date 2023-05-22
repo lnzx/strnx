@@ -12,7 +12,7 @@ path: "/wallets"
         <input
           class="input is-rounded is-small ml-1"
           type="text"
-          placeholder="Filter name and group"
+          placeholder="Filter"
           style="max-width: 20%"
           v-model="keyword"
           @keyup="onKeyUp"
@@ -221,6 +221,7 @@ const onKeyUp = () => {
       wallets.value = origins.value.filter((o) => {
         return (
           o.name.toLowerCase().includes(key) ||
+          o.address.includes(key) ||
           (o.group && o.group.toLowerCase().includes(key))
         );
       });

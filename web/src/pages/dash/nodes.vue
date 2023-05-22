@@ -11,7 +11,7 @@ path: "/nodes"
         <input
           class="input is-rounded is-small ml-1"
           type="text"
-          placeholder="Filter Name"
+          placeholder="Filter"
           style="max-width: 20%"
           v-model="keyword"
           @keyup="onKeyUp"
@@ -96,7 +96,13 @@ path: "/nodes"
             <td>
               <a>{{ e.name }}</a>
             </td>
-            <td class="has-text-success">{{ e.state }}</td>
+            <td
+              :class="
+                e.state === 'active' ? 'has-text-success' : 'has-text-danger'
+              "
+            >
+              {{ e.state }}
+            </td>
             <td>{{ shortNodeId(e.nodeId) }}</td>
             <td>{{ e.type }}</td>
             <td>{{ e.ip }}</td>
@@ -219,9 +225,15 @@ const onKeyUp = () => {
     // 这里编写要执行的操作代码...
     const key = keyword.value;
     if (key) {
-      nodes.value = origins.value.filter((o) =>
-        o.name.toLowerCase().includes(key)
-      );
+      nodes.value = origins.value.filter((o) => {
+        return (
+          o.name.toLowerCase().includes(key) ||
+          o.ip.includes(key) ||
+          (o.group && o.group.toLowerCase().includes(key)) ||
+          (o.state && o.state.toLowerCase().includes(key)) ||
+          (o.nodeId && o.nodeId.toLowerCase().includes(key))
+        );
+      });
     } else {
       nodes.value = origins.value;
     }

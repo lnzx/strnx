@@ -41,8 +41,8 @@ export function makeServer({ environment = "development" } = {}) {
             this.get('/api/nodes', () => {
                 return [
                     {id:'423667f8', name:'aws-id-1',state:'active','type':883, ip:'44.214.105.210', isp:'Oracle', location:'India', cpu:6, ram:24, disk:'228G/249G (92%)', bandwidth:10, traffic: '0/20TB'},
-                    {id:'423667f8', name:'aws-id-2',state:'active','type':883, ip:'44.234.103.210', isp:'Oracle', location:'India', cpu:6, ram:24, disk:'228G/249G (92%)', bandwidth:10, traffic: '160.99 MiB/20TB'},
-                    {id:'423667f8', name:'aws-id-3',state:'active','type':883, ip:'44.234.106.210', isp:'Oracle', location:'India', cpu:6, ram:24, disk:'228G/249G (92%)', bandwidth:10, traffic: '0/20TB', price:45},
+                    {id:'423667f8', name:'aws-id-2',state:'','type':883, ip:'44.234.103.210', isp:'Oracle', location:'India', cpu:6, ram:24, disk:'228G/249G (92%)', bandwidth:10, traffic: '160.99 MiB/20TB'},
+                    {id:'423667f8', name:'aws-id-3',state:'down','type':883, ip:'44.234.106.210', isp:'Oracle', location:'India', cpu:6, ram:24, disk:'228G/249G (92%)', bandwidth:10, traffic: '0/20TB', price:45},
                     {id:'423667f8', name:'aws-id-4',state:'active','type':883, ip:'44.234.108.210', isp:'Oracle', location:'India', cpu:6, ram:24, disk:'228G/249G (92%)', bandwidth:10, traffic: '0/20TB', renew:'2013-07-01'},
                 ]
             })
