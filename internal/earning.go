@@ -18,10 +18,12 @@ const (
 	UPSERT_EARN     = "INSERT INTO earn(node_id,earning,status,isp,country,city,region,created) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (node_id) DO UPDATE SET earning = $2"
 )
 
+var NodeStatusMap = map[string]Status{}
+
 // FetchNodesEarningJob Query the total earnings of all nodes in the last 30 days
 func FetchNodesEarningJob() {
 	now := time.Now().UTC()
-	start, end := tools.GetMonthRange(now)
+	start, end := tools.GetBeforeDayN(now, 1)
 	metrics, err := fetchNodesEarning(start, end)
 	if err != nil {
 		log.Println(err)
@@ -30,6 +32,11 @@ func FetchNodesEarningJob() {
 	if len(metrics) == 0 {
 		log.Println("cron FetchNodesEarningJob metrics 0 skip")
 		return
+	}
+
+	statusMap, err := fetchNodesStatus()
+	if err == nil {
+		NodeStatusMap = statusMap
 	}
 
 	batch := &pgx.Batch{}
@@ -108,9 +115,9 @@ func fetchNodesStatus() (map[string]Status, error) {
 }
 
 func ConvertNodesToMap(nodes []Status) map[string]Status {
-	nodeMap := make(map[string]Status, len(nodes))
+	statusMap := make(map[string]Status, len(nodes))
 	for _, node := range nodes {
-		nodeMap[node.Id] = node
+		statusMap[node.Id] = node
 	}
-	return nodeMap
+	return statusMap
 }

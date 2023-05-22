@@ -46,7 +46,8 @@ type WalletResult struct {
 		Count int16  `json:"count"`
 		State string `json:"state"`
 	} `json:"nodes"`
-	Address string
+	PerNodeMetrics []PerNodeMetrics `json:"perNodeMetrics"`
+	Address        string
 }
 
 func (w *WalletResult) NodeCounts() (active, others int16) {

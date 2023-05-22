@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-var NodeStatusMap map[string]Status
-
 func StartAsync() {
 	s := gocron.NewScheduler(time.UTC)
 	// 如果配置了发短信,才启动检查版本定时任务
@@ -22,16 +20,11 @@ func StartAsync() {
 		}
 	}
 
-	// 查询节点信息给其它任务使用[更新节点运行状态,保存所有节点收益]
-	if _, err := s.Every(10).Minutes().Do(FetchNodeMapJob); err != nil {
-		log.Println(err)
-	}
-
 	// 如果配置了ssh用户名密码,才启动检查节点服务器信息定时任务
 	if SSH_USER != "" && SSH_PASS != "" {
 		_, err := s.Every(11).Minutes().Do(func() {
 			time.Sleep(20 * time.Second)
-			updateNodeInfoJob()
+			updateNodeSysInfoJob()
 		})
 		if err != nil {
 			log.Println("node stats job error:", err)
@@ -51,46 +44,61 @@ func StartAsync() {
 		log.Println(err)
 	}
 
-	//if _, err := s.Every(1).Day().At("23:50;23:58").Do(FetchNodesEarningJob); err != nil {
+	//if _, err := s.Every(10).Minutes().Do(FetchNodesEarningJob); err != nil {
 	//	log.Println(err)
 	//}
 
 	s.StartAsync()
 }
 
-func FetchNodeMapJob() {
-	status, err := fetchNodesStatus()
-	if err != nil {
-		log.Println("cron FetchNodeMap error:", err)
-		return
-	}
-	NodeStatusMap = status
-	log.Println("cron FetchNodeMap started:", len(status))
-}
-
-func updateNodeInfoJob() {
+func updateNodeSysInfoJob() {
+	now := time.Now().UTC()
 	nodes, err := SelectNodes()
 	if err != nil {
-		log.Println("cron updateNodeInfoJob error:", err)
+		log.Println("cron updateNodeSysInfoJob:", err)
 		return
 	}
 	if len(nodes) == 0 {
-		log.Println("cron updateNodeInfoJob 0, skip")
+		log.Println("cron updateNodeSysInfoJob 0 skip")
 		return
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(nodes))
+	batch := &pgx.Batch{}
 	for _, node := range nodes {
-		go func(host, id string) {
-			go UpdateNodeInfo(host)
-		}(node.IP, node.NodeId)
+		go func(ip string) {
+			defer wg.Done()
+			sys, e := GetSysInfo(ip)
+			if e != nil {
+				log.Println("job GetSysInfo error:", e)
+				return
+			}
+			batch.Queue(UpdateSysInfoSql, sys.Cpu, sys.Ram, sys.Disk, sys.Traffic, sys.NodeId, sys.Version, ip)
+		}(node.IP)
 	}
-	log.Println("cron updateNodeInfoJob started:", len(nodes))
+	wg.Wait()
+
+	if batch.Len() == 0 {
+		log.Println("cron updateNodeSysInfoJob batch 0 skip")
+		return
+	}
+	br := pool.SendBatch(context.Background(), batch)
+	if err = br.Close(); err != nil {
+		log.Println("cron updateNodeSysInfoJob", err)
+		return
+	}
+	log.Printf("cron updateNodeInfoJob started %d %s\n", len(nodes), time.Now().UTC().Sub(now).String())
 }
 
 func dailyEarningsJob() {
 	earningsJob("daily", tools.GetBeforeDay, func(wr *WalletResult, batch *pgx.Batch) {
 		active, others := wr.NodeCounts()
 		batch.Queue(UPDATE_WALLET_DAILY, wr.GlobalStats.TotalEarnings, []int16{active, others}, wr.Address)
+
+		for _, metric := range wr.PerNodeMetrics {
+			batch.Queue(UpdateNodeStateSql, metric.Max, metric.NodeId)
+		}
 	})
 }
 
@@ -123,35 +131,26 @@ func earningsJob(name string, timeRangeFunc func(time.Time) (time.Time, time.Tim
 	}
 
 	start, end := timeRangeFunc(now)
-
-	ch := make(chan *WalletResult, n)
 	var wg sync.WaitGroup
 	wg.Add(n)
-
+	batch := &pgx.Batch{}
 	for _, wallet := range wallets {
 		go func(addr string) {
 			defer wg.Done()
 			wr, e := FetchWalletEarnings(addr, start, end)
 			if e != nil {
-				log.Println("FetchWalletEarnings error:", e)
+				log.Println("job FetchWalletEarnings error:", e)
 				return
 			}
+			populateSqlFunc(wr, batch)
 			log.Printf("%s %s %f", name, addr, wr.GlobalStats.TotalEarnings)
-			ch <- wr
 		}(wallet.Address)
 	}
-
 	wg.Wait()
-	close(ch)
 
-	if len(ch) == 0 {
-		log.Printf("cron %s earnings chan 0 skip\n", name)
+	if batch.Len() == 0 {
+		log.Println("cron FetchWalletEarnings batch 0 skip")
 		return
-	}
-
-	batch := &pgx.Batch{}
-	for wr := range ch {
-		populateSqlFunc(wr, batch)
 	}
 
 	br := pool.SendBatch(context.Background(), batch)

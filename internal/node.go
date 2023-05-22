@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	InsertNodeSql    = "INSERT INTO node(name,ip,bandwidth,traffic,price,renew) VALUES ($1,$2,$3,$4,$5,$6)"
-	UpdateSysInfoSql = "UPDATE node SET cpu=$1,ram=$2,disk=$3,traffic=$4,node_id=$5,type=$6,state=$7 WHERE ip = $8"
+	InsertNodeSql      = "INSERT INTO node(name,ip,bandwidth,traffic,price,renew) VALUES ($1,$2,$3,$4,$5,$6)"
+	UpdateSysInfoSql   = "UPDATE node SET cpu=$1,ram=$2,disk=$3,traffic=$4,node_id=$5,type=$6 WHERE ip = $7"
+	UpdateNodeStateSql = "UPDATE node SET state=$1 WHERE node_id = $2"
 )
 
 var HTTP_API_TOKEN = os.Getenv("HTTP_API_TOKEN")
@@ -44,25 +45,19 @@ func AddNodes(c *fiber.Ctx) error {
 	}
 
 	if SSH_USER != "" && SSH_PASS != "" {
-		go UpdateNodeInfo(node.IP)
+		go UpdateNodeSysInfo(node.IP)
 	}
 	return nil
 }
 
-func UpdateNodeInfo(ip string) {
+func UpdateNodeSysInfo(ip string) {
 	sys, err := GetSysInfo(ip)
 	if err != nil {
 		log.Println("GetSysInfo error:", err)
 		return
 	}
-	state := "-"
-	nodeId := sys.NodeId
-	if nodeId != "" {
-		if status, ok := NodeStatusMap[nodeId]; ok {
-			state = status.State
-		}
-	}
-	_, err = pool.Exec(context.Background(), UpdateSysInfoSql, sys.Cpu, sys.Ram, sys.Disk, sys.Traffic, sys.NodeId, sys.Version, state, ip)
+
+	_, err = pool.Exec(context.Background(), UpdateSysInfoSql, sys.Cpu, sys.Ram, sys.Disk, sys.Traffic, sys.NodeId, sys.Version, ip)
 	if err != nil {
 		log.Println(err)
 	}
