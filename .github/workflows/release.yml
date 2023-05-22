@@ -35,4 +35,4 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64
-          tags: ghcr.io/lnzx/strnx:${{ github.event.release.tag_name }}
+          tags: ghcr.io/lnzx/strnx:${{ github.event.release.tag_name }}, ghcr.io/lnzx/strnx:latest
