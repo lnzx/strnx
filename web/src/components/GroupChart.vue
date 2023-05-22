@@ -10,12 +10,13 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
+
 const props = defineProps({
-  groups: Array,
-  default: () => [],
+  data: Array,
 });
 
-const { groups } = toRefs(props);
+const { data: groups } = toRefs(props);
 
 const series = computed(() => {
   return [
@@ -31,6 +32,19 @@ const chartOptions = computed(() => {
     title: {
       text: "Group Earnings",
       align: "left",
+    },
+    xaxis: {
+      categories: groups.value.map((e) => e.name),
+      position: "bottom",
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
     },
     chart: {
       toolbar: {
@@ -57,19 +71,6 @@ const chartOptions = computed(() => {
       },
     },
 
-    xaxis: {
-      categories: groups.value.map((e) => e.name),
-      position: "bottom",
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-    },
     yaxis: {
       axisBorder: {
         show: false,

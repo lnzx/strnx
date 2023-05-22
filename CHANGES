@@ -2,7 +2,7 @@
 增加pool表(流量池)
 表node增加pool_id字段 (ALTER TABLE "public"."node" ADD COLUMN "pool_id" INT4 NULL DEFAULT 0;)
 表node增加node_id字段 (ALTER TABLE "public"."node" ADD COLUMN "node_id" varchar(8) DEFAULT '';)
-钱包界面和表增加group字段
+钱包界面和表增加group字段 (ALTER TABLE "public"."wallet" ADD COLUMN "group" varchar(8) DEFAULT '-';)
 钱包和节点界面增加搜索
 节点增加关联流量池功能(未完全完成)
 增加收益按组显示图表

@@ -50,15 +50,10 @@
       </div>
       <div class="column">
         <div class="box">
-          <apexchart
-            type="line"
-            height="200"
-            :options="monthOptions"
-            :series="monthSeries"
-          ></apexchart>
+          <MonthChart :data="dailys" :time="time"></MonthChart>
         </div>
         <div class="box">
-          <GroupChart :groups="groups"></GroupChart>
+          <GroupChart :data="groups"></GroupChart>
         </div>
       </div>
     </div>
@@ -66,11 +61,14 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+
+const api = useApi();
 const earnings = ref(0);
 const nodes = ref([]);
-const api = useApi();
-
 const groups = ref([]);
+const time = ref("");
+const dailys = ref([]);
 
 const options = {
   legend: {
@@ -81,38 +79,13 @@ const options = {
 };
 const series = ref([]);
 
-const monthOptions = ref({});
+api.get("/api/summary").then((res) => {
+  nodes.value = res.data.nodes;
+  series.value = [res.data.nodes[0], res.data.nodes[1]];
 
-const monthSeries = ref([
-  {
-    name: "FIL",
-    data: [],
-  },
-]);
+  time.value = res.data.time;
+  dailys.value = res.data.dailys;
 
-const getData = () => {
-  api.get("/api/summary").then((res) => {
-    groups.value = res.data.groups;
-    earnings.value = res.data.earnings;
-    nodes.value = res.data.nodes;
-    series.value = [res.data.nodes[0], res.data.nodes[1]];
-    monthSeries.value[0].data = res.data.dailys;
-    monthOptions.value = {
-      title: {
-        text: "Earnings by Month " + res.data.time,
-        align: "left",
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      chart: {
-        toolbar: {
-          show: false,
-        },
-      },
-    };
-  });
-};
-
-getData();
+  groups.value = res.data.groups;
+});
 </script>

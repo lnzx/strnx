@@ -12,7 +12,8 @@ CREATE TABLE "public"."wallet" (
       "address" VARCHAR(41) not null,
       "nodes" INT2 [] not null DEFAULT '{0,0}',
       "balance" REAL not null default 0,
-      "daily" REAL not null default 0
+      "daily" REAL not null default 0,
+      "group" VARCHAR(8) DEFAULT '-'
 );
 
 CREATE TABLE public.earn (
@@ -39,7 +40,8 @@ CREATE TABLE public.node (
     type VARCHAR(8) DEFAULT '',
     cpu integer NOT NULL DEFAULT 0,
     ram VARCHAR(8) DEFAULT '',
-    disk VARCHAR(32) DEFAULT ''
+    disk VARCHAR(32) DEFAULT '',
+    pool_id integer NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX "node_ip" on "public"."node"("ip");
 
