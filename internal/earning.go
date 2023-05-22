@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sort"
 	"time"
 )
 
@@ -22,7 +21,7 @@ const (
 // FetchNodesEarningJob Query the total earnings of all nodes in the last 30 days
 func FetchNodesEarningJob() {
 	now := time.Now().UTC()
-	start, end := tools.GetBeforeDayN(now, 30)
+	start, end := tools.GetMonthRange(now)
 	metrics, err := fetchNodesEarning(start, end)
 	if err != nil {
 		log.Println(err)
@@ -33,22 +32,16 @@ func FetchNodesEarningJob() {
 		return
 	}
 
-	tops := GetTopNodesEarning(metrics, 100)
-	nodeMap, err := fetchNodesStatus()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	batch := &pgx.Batch{}
-	for _, node := range tops {
+	for _, node := range metrics {
 		if node.FilAmount == 0 {
 			continue
 		}
-		status := nodeMap[node.NodeId]
-		geo := status.Geoloc
-		batch.Queue(UPSERT_EARN, node.NodeId, node.FilAmount, node.PayoutStatus,
-			status.Speedtest.Isp, geo.Country, geo.City, geo.Region, status.Created)
+		if status, ok := NodeStatusMap[node.NodeId]; ok {
+			geo := status.Geoloc
+			batch.Queue(UPSERT_EARN, node.NodeId, node.FilAmount, node.PayoutStatus,
+				status.Speedtest.Isp, geo.Country, geo.City, geo.Region, status.Created)
+		}
 	}
 	br := pool.SendBatch(context.Background(), batch)
 	if err = br.Close(); err != nil {
@@ -64,9 +57,9 @@ func fetchNodesEarning(start, end time.Time) ([]PerNodeMetrics, error) {
 	rsp, err := tools.Get(url)
 	if err != nil {
 		if rsp != nil {
-			err = rsp.Body.Close()
-			if err != nil {
-				return nil, err
+			e := rsp.Body.Close()
+			if e != nil {
+				log.Println(e)
 			}
 		}
 		return nil, err
@@ -84,14 +77,6 @@ func fetchNodesEarning(start, end time.Time) ([]PerNodeMetrics, error) {
 	return metrics.PerNodeMetrics, nil
 }
 
-// GetTopNodesEarning 对filAmount从大到小排序,只取前n个
-func GetTopNodesEarning(metrics []PerNodeMetrics, n int) []PerNodeMetrics {
-	sort.Slice(metrics, func(i, j int) bool {
-		return metrics[i].FilAmount > metrics[j].FilAmount
-	})
-	return metrics[0:n]
-}
-
 func fetchNodesStatus() (map[string]Status, error) {
 	req, err := http.NewRequest("GET", NodeStatusUrl, nil)
 	if err != nil {
@@ -102,9 +87,8 @@ func fetchNodesStatus() (map[string]Status, error) {
 	rsp, err := tools.Do(req)
 	if err != nil {
 		if rsp != nil {
-			err = rsp.Body.Close()
-			if err != nil {
-				return nil, err
+			if e := rsp.Body.Close(); e != nil {
+				log.Println(e)
 			}
 		}
 		return nil, err
@@ -114,17 +98,17 @@ func fetchNodesStatus() (map[string]Status, error) {
 	if err != nil {
 		return nil, err
 	}
-	var stats NodeStatus
-	err = json.Unmarshal(bytes, &stats)
+	var r NodeStatsResult
+	err = json.Unmarshal(bytes, &r)
 	if err != nil {
 		return nil, err
 	}
 
-	return ConvertNodesToMap(stats.Nodes), nil
+	return ConvertNodesToMap(r.Nodes), nil
 }
 
 func ConvertNodesToMap(nodes []Status) map[string]Status {
-	nodeMap := make(map[string]Status)
+	nodeMap := make(map[string]Status, len(nodes))
 	for _, node := range nodes {
 		nodeMap[node.Id] = node
 	}

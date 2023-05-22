@@ -17,11 +17,7 @@ const (
 	TIMEOUT    = 30 * time.Second
 	PORT       = 22
 	UpgradeCmd = "curl -H 'Authorization: Bearer %s' localhost:8080/v1/update"
-	CpuCmd     = "nproc"
-	RamCmd     = "free -h | awk '/^Mem:/ {print $2}'"
-	DiskCmd    = "df -h / | awk 'NR>1 {print $2, $3, $5}'"
-	VersionCmd = "docker inspect saturn-node | grep -oP '(?<=\"VERSION=)[^_]+'"
-	SysInfoCmd = CpuCmd + " && " + RamCmd + " && " + DiskCmd + " && " + VersionCmd
+	SysInfoCmd = `echo "$(nproc),$(free -h | awk '/^Mem:/ {print $2}'),$(df -h / | awk 'NR>1 {print $2, $3, $5}'),$(vnstat --oneline 2>/dev/null | awk -F ';' '{print $10}'),$(SATURN_HOME=$(sudo docker inspect saturn-node 2>/dev/null | grep 'SATURN_HOME' | sed 's/[" ,]//g' | awk -F '=' '{print $2}') && cat ${SATURN_HOME:-$HOME}/shared/nodeId.txt 2>/dev/null),$(sudo docker inspect saturn-node 2>/dev/null | grep -oP '(?<="VERSION=)[^_]+')"`
 )
 
 var SSH_USER = os.Getenv("SSH_USER")
@@ -33,16 +29,15 @@ func GetSysInfo(host string) (*SysInfo, error) {
 		log.Println("GetSysInfo error:", err)
 		return nil, err
 	}
-	// 1
-	// 961Mi
-	// 49G 4.1G 9%
-	// Error: No such object: saturn-node
-	lines := strings.Split(output, "\n")
+	// 4,7.8Gi,158G 41G 27%,,eafb4495-470f-4a5b-8440-b44d043d85c3,887
+	columns := strings.Split(output, ",")
 	return &SysInfo{
-		Cpu:     tools.ToInt(lines[0]),
-		Ram:     lines[1],
-		Disk:    tools.WrapDisk(lines[2]),
-		Version: tools.IfThen(strings.HasPrefix(lines[3], "Error:"), "-", lines[3]),
+		Cpu:     tools.ToInt(columns[0]),
+		Ram:     columns[1],
+		Disk:    columns[2],
+		Traffic: columns[3],
+		NodeId:  columns[4],
+		Version: columns[5],
 	}, nil
 }
 

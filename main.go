@@ -55,6 +55,7 @@ func main() {
 	api.Post("/nodes", AddNodes)
 	api.Delete("/nodes", DeleteNodes)
 	api.Post("/nodes/upgrade", Upgrade)
+	api.Post("/nodes/pool", AddPool)
 
 	// fix vue history router 404
 	app.Static("*", "./dist/index.html")

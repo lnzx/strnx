@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	InsertNodeSql      = "INSERT INTO node(name,ip,bandwidth,traffic,price,renew) VALUES ($1,$2,$3,$4,$5,$6)"
-	UpdateSysInfoSql   = "UPDATE node SET cpu=$1,ram=$2,disk=$3,type=$4 WHERE ip = $5"
-	UpdateNodeStateSql = "UPDATE node SET state=$1 WHERE ip = $2"
+	InsertNodeSql    = "INSERT INTO node(name,ip,bandwidth,traffic,price,renew) VALUES ($1,$2,$3,$4,$5,$6)"
+	UpdateSysInfoSql = "UPDATE node SET cpu=$1,ram=$2,disk=$3,traffic=$4,node_id=$5,type=$6,state=$7 WHERE ip = $8"
 )
 
 var HTTP_API_TOKEN = os.Getenv("HTTP_API_TOKEN")
@@ -45,29 +44,27 @@ func AddNodes(c *fiber.Ctx) error {
 	}
 
 	if SSH_USER != "" && SSH_PASS != "" {
-		go UpdateSysInfo(node.IP)
+		go UpdateNodeInfo(node.IP)
 	}
 	return nil
 }
 
-func UpdateSysInfo(ip string) {
+func UpdateNodeInfo(ip string) {
 	sys, err := GetSysInfo(ip)
 	if err != nil {
-		log.Println(err)
+		log.Println("GetSysInfo error:", err)
 		return
 	}
-	_, err = pool.Exec(context.Background(), UpdateSysInfoSql, sys.Cpu, sys.Ram, sys.Disk, sys.Version, ip)
-	if err != nil {
-		log.Println(err)
-		return
+	state := "-"
+	nodeId := sys.NodeId
+	if nodeId != "" {
+		if status, ok := NodeStatusMap[nodeId]; ok {
+			state = status.State
+		}
 	}
-}
-
-func UpdateNodeState(ip string) {
-	_, err := pool.Exec(context.Background(), UpdateNodeStateSql, "active", ip)
+	_, err = pool.Exec(context.Background(), UpdateSysInfoSql, sys.Cpu, sys.Ram, sys.Disk, sys.Traffic, sys.NodeId, sys.Version, state, ip)
 	if err != nil {
 		log.Println(err)
-		return
 	}
 }
 
@@ -97,7 +94,7 @@ func Upgrade(c *fiber.Ctx) error {
 		go func(host string) {
 			_, e := Cmd(host, cmd, false)
 			if e != nil {
-				log.Println(e)
+				log.Println("Upgrade error:", e)
 				return
 			}
 		}(s)

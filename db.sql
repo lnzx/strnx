@@ -35,9 +35,16 @@ CREATE TABLE public.node (
     price real NOT NULL DEFAULT 0,
     renew VARCHAR(10) DEFAULT '',
     state VARCHAR(12) DEFAULT '',
+    node_id VARCHAR(36) DEFAULT '',
     type VARCHAR(8) DEFAULT '',
     cpu integer NOT NULL DEFAULT 0,
     ram VARCHAR(8) DEFAULT '',
-    disk VARCHAR(24) DEFAULT ''
+    disk VARCHAR(32) DEFAULT ''
 );
 CREATE UNIQUE INDEX "node_ip" on "public"."node"("ip");
+
+CREATE TABLE public.pool (
+    id smallserial PRIMARY KEY,
+    traffic integer NOT NULL DEFAULT 0,
+    used integer NULL DEFAULT 0
+);

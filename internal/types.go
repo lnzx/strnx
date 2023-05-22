@@ -13,6 +13,7 @@ type Wallet struct {
 	Balance float32 `json:"balance"`
 	Daily   float32 `json:"daily"`
 	Nodes   []int16 `json:"nodes"`
+	Group   string  `json:"group"`
 }
 
 type Daily struct {
@@ -29,12 +30,17 @@ type Node struct {
 	Renew     string  `json:"renew"`
 	State     string  `json:"state"`
 	Type      string  `json:"type"`
+	NodeId    string  `json:"nodeId" db:"node_id"`
 	CPU       int     `json:"cpu"`
 	Ram       string  `json:"ram"`
 	Disk      string  `json:"disk"`
+	PoolId    int     `json:"poolId" db:"pool_id"`
 }
 
 type WalletResult struct {
+	GlobalStats struct {
+		TotalEarnings float32 `json:"totalEarnings"`
+	} `json:"globalStats"`
 	Earnings []Earning `json:"earnings"`
 	Nodes    []struct {
 		Count int16  `json:"count"`
@@ -43,22 +49,12 @@ type WalletResult struct {
 	Address string
 }
 
-func (w *WalletResult) Balance() (balance float32) {
-	for _, earn := range w.Earnings {
-		amount := earn.FilAmount
-		if amount > 0 {
-			balance += earn.FilAmount
-		}
-	}
-	return
-}
-
-func (w *WalletResult) NodeCounts() (active, inactive int16) {
+func (w *WalletResult) NodeCounts() (active, others int16) {
 	for _, node := range w.Nodes {
 		if node.State == "active" {
 			active += node.Count
 		} else {
-			inactive += node.Count
+			others += node.Count
 		}
 	}
 	return
@@ -77,6 +73,7 @@ type PerNodeMetrics struct {
 	NodeId       string    `json:"nodeId"`
 	FilAmount    float32   `json:"filAmount"`
 	PayoutStatus string    `json:"payoutStatus"`
+	Max          string    `json:"max"`
 	Isp          string    `json:"isp"`
 	Country      string    `json:"country"`
 	City         string    `json:"city"`
@@ -84,12 +81,13 @@ type PerNodeMetrics struct {
 	Created      time.Time `json:"created"`
 }
 
-type NodeStatus struct {
+type NodeStatsResult struct {
 	Nodes []Status `json:"nodes"`
 }
 
 type Status struct {
 	Id     string `json:"id"`
+	State  string `json:"state"`
 	Geoloc struct {
 		Country string `json:"country"`
 		City    string `json:"city"`
@@ -106,5 +104,11 @@ type SysInfo struct {
 	Cpu     int
 	Ram     string
 	Traffic string
+	NodeId  string
 	Version string
+}
+
+type Group struct {
+	Name    string  `json:"name"`
+	Balance float32 `json:"balance"`
 }

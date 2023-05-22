@@ -24,7 +24,7 @@ func init() {
 }
 
 func SelectWallets() (wallets []Wallet, err error) {
-	rows, err := pool.Query(context.Background(), "SELECT name,address,nodes,balance,daily FROM wallet ORDER BY daily DESC,balance DESC")
+	rows, err := pool.Query(context.Background(), "SELECT name,address,nodes,balance,daily,\"group\" FROM wallet ORDER BY daily DESC,balance DESC")
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func SelectWallets() (wallets []Wallet, err error) {
 }
 
 func InsertWallet(wallet *Wallet) (err error) {
-	_, err = pool.Exec(context.Background(), "INSERT INTO wallet(name,address) VALUES ($1,$2)", wallet.Name, wallet.Address)
+	_, err = pool.Exec(context.Background(), "INSERT INTO wallet(name,address,\"group\") VALUES ($1,$2,$3)", wallet.Name, wallet.Address, wallet.Group)
 	return
 }
 
@@ -50,7 +50,7 @@ func Batch(sql string, params []string) error {
 }
 
 func SelectNodes() (nodes []Node, err error) {
-	rows, err := pool.Query(context.Background(), "SELECT id,name,ip,bandwidth,traffic,price,renew,cpu,ram,disk,state,type FROM node ORDER BY renew")
+	rows, err := pool.Query(context.Background(), "SELECT id,name,ip,bandwidth,traffic,price,renew,cpu,ram,disk,state,node_id,type,pool_id FROM node ORDER BY renew")
 	if err != nil {
 		return nil, err
 	}

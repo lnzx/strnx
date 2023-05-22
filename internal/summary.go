@@ -23,11 +23,16 @@ func Summary(c *fiber.Ctx) error {
 	if err != nil {
 		log.Println(err)
 	}
+	groups, err := selectGroups()
+	if err != nil {
+		log.Println(err)
+	}
 	return c.JSON(fiber.Map{
 		"nodes":    nodes,
 		"earnings": earnings,
 		"dailys":   dailys,
 		"time":     time.Now().UTC().Format("2006-01-02 15:03:04"),
+		"groups":   groups,
 	})
 }
 
@@ -55,5 +60,14 @@ func selectDailyEarns() (dailys []float32, err error) {
 	for _, entry := range entries {
 		dailys = append(dailys, entry.Earnings)
 	}
+	return
+}
+
+func selectGroups() (groups []Group, err error) {
+	rows, err := pool.Query(context.Background(), "SELECT \"group\" AS \"name\",SUM(balance) AS balance FROM wallet GROUP BY \"group\" ORDER BY balance DESC")
+	if err != nil {
+		return
+	}
+	groups, err = pgx.CollectRows(rows, pgx.RowToStructByName[Group])
 	return
 }

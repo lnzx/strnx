@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var lastVersion = 883
+var lastVersion = 887
 var smsApiKey = os.Getenv("SMS_API_KEY")
 var mobile = os.Getenv("MOBILE")
 
@@ -27,7 +27,7 @@ func CheckVersionJob() {
 		if rsp != nil {
 			err = rsp.Body.Close()
 			if err != nil {
-				return
+				log.Println(err)
 			}
 		}
 		return
@@ -46,8 +46,7 @@ func CheckVersionJob() {
 	if version.LastVersion > lastVersion {
 		// 内容不能超过12个字符 Node更新:999
 		msg := fmt.Sprintf("Node更新:%d", version.LastVersion)
-		err = sendSms(msg)
-		if err != nil {
+		if err = sendSms(msg); err != nil {
 			log.Println(err)
 			return
 		}
@@ -77,9 +76,9 @@ func sendSms(content string) error {
 	rsp, err := tools.Do(req)
 	if err != nil {
 		if rsp != nil {
-			err = rsp.Body.Close()
-			if err != nil {
-				return err
+			e := rsp.Body.Close()
+			if e != nil {
+				log.Println(e)
 			}
 		}
 		return err

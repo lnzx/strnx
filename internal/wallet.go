@@ -16,7 +16,7 @@ const WALLET_URL = "https://uc2x7t32m6qmbscsljxoauwoae0yeipw.lambda-url.us-west-
 const (
 	UPDATE_WALLET_DAILY   = "UPDATE wallet SET daily = $1, nodes = $2 WHERE address = $3"
 	UPDATE_WALLET_BALANCE = "UPDATE wallet SET balance = $1 WHERE address = $2"
-	UPSERT_DAILY_EARN     = "INSERT INTO daily(earnings,address,date) VALUES ($1, $2, $3) ON CONFLICT (address,date) DO UPDATE SET earnings = $4"
+	UPSERT_DAILY_EARN     = "INSERT INTO daily(earnings,address,date) VALUES ($1, $2, $3) ON CONFLICT (address,date) DO UPDATE SET earnings = $1"
 )
 
 func GetWallets(c *fiber.Ctx) error {
@@ -63,17 +63,17 @@ func FetchWalletEarnings(address string, start, end time.Time) (*WalletResult, e
 	rsp, err := tools.Get(url)
 	if err != nil {
 		if rsp != nil {
-			err = rsp.Body.Close()
-			if err != nil {
-				return nil, err
+			e := rsp.Body.Close()
+			if e != nil {
+				log.Println(e)
 			}
 		}
 		return nil, err
 	}
 	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-			log.Println(err)
+		e := Body.Close()
+		if e != nil {
+			log.Println(e)
 		}
 	}(rsp.Body)
 

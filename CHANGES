@@ -1,0 +1,29 @@
+0.1.8 / 2023-05-18
+
+增加node表
+增加环境变量SSH_USER,SSH_PASS,HTTP_API_TOKEN
+
+0.1.9 / 2023-05-20
+增加pool表(流量池)
+表node增加pool_id字段 (ALTER TABLE "public"."node" ADD COLUMN "pool_id" INT4 NULL DEFAULT 0;)
+表node增加node_id字段 (ALTER TABLE "public"."node" ADD COLUMN "node_id" varchar(8) DEFAULT '';)
+钱包界面和表增加group字段
+钱包和节点界面增加搜索
+节点增加关联流量池功能(未完全完成)
+增加收益按组显示图表
+删除获取其它节点收益job(暂时好像没啥用)
+查询收益增加日志
+
+
+
+
+
+
+
+
+
+
+
+
+
+

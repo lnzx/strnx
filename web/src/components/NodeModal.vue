@@ -9,7 +9,9 @@
       <section class="modal-card-body">
         <div class="field is-horizontal">
           <div class="field-label is-normal">
-            <label class="label">Name</label>
+            <label class="label"
+              ><span class="has-text-danger">*</span> Name</label
+            >
           </div>
           <div class="field-body">
             <div class="field">
@@ -27,7 +29,9 @@
         </div>
         <div class="field is-horizontal">
           <div class="field-label is-normal">
-            <label class="label">IP</label>
+            <label class="label"
+              ><span class="has-text-danger">*</span> IP</label
+            >
           </div>
           <div class="field-body">
             <div class="field">
@@ -133,7 +137,7 @@
 </template>
 
 <script setup>
-const api = useApi()
+const api = useApi();
 const isOpen = ref(false);
 const name = ref("");
 const ip = ref("");
@@ -155,25 +159,34 @@ const add = () => {
     alert("名字和ip不能为空");
     return;
   }
-  let trafficVal =  0
-  if(traffic.value){
-    trafficVal = traffic.value
+  let trafficVal = 0;
+  if (traffic.value) {
+    trafficVal = traffic.value;
   }
-  let bandwidthVal =  0
-  if(bandwidth.value){
-    bandwidthVal = bandwidth.value
+  let bandwidthVal = 0;
+  if (bandwidth.value) {
+    bandwidthVal = bandwidth.value;
   }
-  let priceVal =  0
-  if(price.value){
-    priceVal = price.value
+  let priceVal = 0;
+  if (price.value) {
+    priceVal = price.value;
   }
-  let renewVal = '-'
-  if(renew.value && renew.value.length > 0){
-    renewVal = renew.value
+  let renewVal = "-";
+  if (renew.value && renew.value.length > 0) {
+    renewVal = renew.value;
   }
-  api.post('/api/nodes', {name:name.value, ip:ip.value, bandwidth:bandwidthVal, traffic:trafficVal+'TB', price:priceVal, renew:renewVal}).then(() => {
-    ip.value = ''
-  })
+  api
+    .post("/api/nodes", {
+      name: name.value,
+      ip: ip.value,
+      bandwidth: bandwidthVal,
+      traffic: trafficVal + "TB",
+      price: priceVal,
+      renew: renewVal,
+    })
+    .then(() => {
+      ip.value = "";
+    });
 };
 
 defineExpose({ open });
