@@ -1,9 +1,4 @@
-0.1.8 / 2023-05-18
-
-增加node表
-增加环境变量SSH_USER,SSH_PASS,HTTP_API_TOKEN
-
-0.1.9 / 2023-05-20
+0.0.1 / 2023-05-22
 增加pool表(流量池)
 表node增加pool_id字段 (ALTER TABLE "public"."node" ADD COLUMN "pool_id" INT4 NULL DEFAULT 0;)
 表node增加node_id字段 (ALTER TABLE "public"."node" ADD COLUMN "node_id" varchar(8) DEFAULT '';)
