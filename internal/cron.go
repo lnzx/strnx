@@ -29,7 +29,7 @@ func StartAsync() {
 
 	// 如果配置了ssh用户名密码,才启动检查节点服务器信息定时任务
 	if SSH_USER != "" && SSH_PASS != "" {
-		_, err := s.Every(13).Minutes().Do(func() {
+		_, err := s.Every(11).Minutes().Do(func() {
 			time.Sleep(20 * time.Second)
 			updateNodeInfoJob()
 		})
@@ -39,12 +39,12 @@ func StartAsync() {
 	}
 
 	// 过去1天的收益
-	if _, err := s.Every(23).Minutes().Do(dailyEarningsJob); err != nil {
+	if _, err := s.Every(13).Minutes().Do(dailyEarningsJob); err != nil {
 		log.Println(err)
 	}
 
 	// 本月的收益
-	if _, err := s.Every(1).Hours().Do(func() {
+	if _, err := s.Every(30).Minutes().Do(func() {
 		time.Sleep(1 * time.Minute)
 		monthlyEarningsJob()
 	}); err != nil {
