@@ -35,7 +35,7 @@ func GetSysInfo(host string) (*SysInfo, error) {
 		Cpu:     tools.ToInt(columns[0]),
 		Ram:     columns[1],
 		Disk:    columns[2],
-		Traffic: columns[3],
+		Traffic: tools.ParseTraffic(columns[3]),
 		NodeId:  columns[4],
 		Version: columns[5],
 	}, nil

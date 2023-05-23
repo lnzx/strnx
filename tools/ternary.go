@@ -2,6 +2,7 @@ package tools
 
 import (
 	"strconv"
+	"strings"
 )
 
 func IfThen(exp bool, trueVal, defaultVal string) string {
@@ -17,4 +18,11 @@ func ToInt(s string) int {
 		return 0
 	}
 	return n
+}
+
+func ParseTraffic(s string) string {
+	if s != "" && strings.Contains(s, "Not enough data") {
+		return ""
+	}
+	return s
 }
