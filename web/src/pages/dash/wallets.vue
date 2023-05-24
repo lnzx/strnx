@@ -216,8 +216,9 @@ const onKeyUp = () => {
   clearTimeout(timeoutId); // 每次先清除已有的定时器
   timeoutId = setTimeout(() => {
     // 这里编写要执行的操作代码...
-    const key = keyword.value;
+    let key = keyword.value;
     if (key) {
+      key = key.toLowerCase();
       wallets.value = origins.value.filter((o) => {
         return (
           o.name.toLowerCase().includes(key) ||
