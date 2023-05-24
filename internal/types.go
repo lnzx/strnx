@@ -52,7 +52,7 @@ type WalletResult struct {
 
 func (w *WalletResult) NodeCounts() (active, others int16) {
 	for _, node := range w.Nodes {
-		if node.State == "active" {
+		if node.State == "active" || node.State == "draining" {
 			active += node.Count
 		} else {
 			others += node.Count
