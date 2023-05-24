@@ -98,7 +98,11 @@ path: "/nodes"
             </td>
             <td
               :class="
-                e.state === 'active' ? 'has-text-success' : 'has-text-danger'
+                e.state === 'active'
+                  ? 'has-text-success'
+                  : e.state === 'draining'
+                  ? 'has-text-warning'
+                  : 'has-text-danger'
               "
             >
               {{ e.state }}
