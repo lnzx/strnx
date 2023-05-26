@@ -91,7 +91,9 @@ path: "/wallets"
               />
             </td>
             <td>
-              <a @click="open(w.address)">{{ w.name }}</a>
+              <a :href="formatAddress(w.address)" target="_blank">{{
+                w.name
+              }}</a>
             </td>
             <td>{{ w.address }}</td>
             <td>
@@ -181,11 +183,8 @@ const del = () => {
   }
 };
 
-const open = (addr) => {
-  window.open(
-    "https://dashboard.saturn.tech/address/" + addr + "?period=30+Days",
-    "_blank"
-  );
+const formatAddress = (addr) => {
+  return "https://dashboard.saturn.tech/address/" + addr + "?period=1+Days";
 };
 
 const maximize = () => {

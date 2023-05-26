@@ -81,6 +81,9 @@ path: "/nodes"
             <th class="th-color">Traffic</th>
             <th class="th-color">Price</th>
             <th class="th-color">Renew</th>
+            <th class="th-color">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </th>
           </tr>
         </thead>
         <tbody style="color: #757981; font-size: 14px">
@@ -117,6 +120,9 @@ path: "/nodes"
             <td>{{ e.traffic }}</td>
             <td>${{ e.price }}</td>
             <td>{{ e.renew }}</td>
+            <td class="i-color pointer" @click="terminal.open(e.name, e.ip)">
+              <i class="fa-solid fa-terminal"></i>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -124,6 +130,7 @@ path: "/nodes"
 
     <NodeModal ref="nodeModal" />
     <PoolModal ref="poolModal" :ips="ips" />
+    <TerminalModal ref="terminal" />
   </main>
 </template>
 
@@ -134,6 +141,8 @@ let ips = [];
 const isHidden = ref(true);
 const nodeModal = ref();
 const poolModal = ref();
+const terminal = ref();
+
 const nodes = ref([]);
 const origins = ref([]);
 const keyword = ref("");
@@ -226,8 +235,7 @@ let timeoutId;
 const onKeyUp = () => {
   clearTimeout(timeoutId); // 每次先清除已有的定时器
   timeoutId = setTimeout(() => {
-    // 这里编写要执行的操作代码...
-    const key = keyword.value;
+    let key = keyword.value;
     if (key) {
       key = key.toLowerCase();
       nodes.value = origins.value.filter((o) => {

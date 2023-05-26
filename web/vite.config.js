@@ -29,11 +29,9 @@ export default defineConfig({
             ['default', 'useSession']
           ],
           'axios': [
-            // default imports
             ['default', 'axios'], // import { default as axios } from 'axios',
           ],
           '@/composable/useApi': [
-            // default imports
             ['useApi'],
           ],
         }

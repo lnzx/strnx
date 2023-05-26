@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" id="AddNodeModal" :class="{ 'is-flex': isOpen }">
+  <div class="modal" id="AddNodeModal" :class="{ 'is-active': isOpen }">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
