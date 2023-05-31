@@ -1,5 +1,5 @@
 <template>
-  <main class="column bg-color" id="main">
+  <main class="column bg-color px-5 py-5" id="main">
     <div style="margin-bottom: 0.8rem">Summary</div>
     <div class="columns">
       <div class="column is-3">
