@@ -4,9 +4,9 @@ meta:
 </route>
 
 <template>
-  <div>
+  <div style="height: 100%">
     <Nav />
-    <div class="columns">
+    <div class="columns" style="height: 92%">
       <Menu />
       <!-- main section -->
       <router-view />
