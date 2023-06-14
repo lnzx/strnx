@@ -7,14 +7,15 @@ WORKDIR /usr/src
 RUN apt update && apt install -y \
     git \
     curl \
-    && curl -fsSL https://go.dev/dl/go1.20.5.linux-amd64.tar.gz -o go.tar.gz \
-    && tar -C /usr/local -xzf go.tar.gz \
+    wget \
+    && wget https://go.dev/dl/go1.20.5.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.20.5.linux-amd64.tar.gz \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt install --no-install-recommends -y nodejs \
+    && apt-get install --no-install-recommends -y nodejs \
     && corepack enable && corepack prepare pnpm@latest --activate \
     && git clone --depth 1 https://github.com/lnzx/strnx.git \
     && rm -rf /var/lib/apt/lists/* \
-    && rm go.tar.gz
+    && rm go1.20.5.linux-amd64.tar.gz
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 
