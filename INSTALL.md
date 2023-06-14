@@ -22,6 +22,7 @@ e.g.
 
 `HTTP_API_TOKEN` watchtower HTTP API Token
 
+`X-CMC_PRO_API_KEY` coinmarketcap api key 查询FIL/USD价格
 > 也可以不用docker安装，自己编译可执行文件
 
 # 简单版本
