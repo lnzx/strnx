@@ -120,7 +120,7 @@ func GetFilUsd() float32 {
 	return 0
 }
 
-func roi(earnings, cost float32) float32 {
+func roi(earnings, cost float32) int {
 	earnings = earnings * FILUSD
-	return (earnings - cost) / cost * 100
+	return int((earnings - cost) / cost * 100)
 }
