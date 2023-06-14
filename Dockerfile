@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG GO_NAME="go1.20.3.linux-amd64.tar.gz"
+ARG GO_NAME="go1.20.5.linux-amd64.tar.gz"
 
 FROM debian:stable-slim AS build
 
