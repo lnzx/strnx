@@ -6,7 +6,7 @@ meta:
 <template>
   <div style="height: 100%">
     <Nav />
-    <div class="columns" style="height: 92%">
+    <div class="columns">
       <Menu />
       <!-- main section -->
       <router-view />

@@ -6,7 +6,7 @@ path: "/wallets"
   <main class="column bg-color px-5 py-5" id="main">
     <div id="title" class="sub-title">Wallets</div>
 
-    <div class="table-container box px-0 py-2">
+    <div class="table-container box px-0 py-2" style="margin-bottom: 0;">
       <div class="px-1" style="padding-bottom: 0.5rem">
         <span>ALL ({{ wallets.length }})</span>
         <input
