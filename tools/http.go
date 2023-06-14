@@ -17,7 +17,7 @@ func init() {
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 10 * time.Second,
 	}
-	client = &http.Client{Transport: transport, Timeout: 1 * time.Minute}
+	client = &http.Client{Transport: transport, Timeout: 90 * time.Second}
 }
 
 func Get(url string) (resp *http.Response, err error) {

@@ -45,6 +45,20 @@
                 </div>
               </div>
             </nav>
+            <nav class="level">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="title">${{ cost }}</p>
+                  <p class="heading">Costs</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="title">{{ roi }}%</p>
+                  <p class="heading">ROI</p>
+                </div>
+              </div>
+            </nav>
           </div>
         </div>
       </div>
@@ -69,6 +83,8 @@ const nodes = ref([]);
 const groups = ref([]);
 const time = ref("");
 const dailys = ref([]);
+const cost = ref(0);
+const roi = ref(0);
 
 const options = {
   legend: {
@@ -80,13 +96,16 @@ const options = {
 const series = ref([]);
 
 api.get("/api/summary").then((res) => {
-  earnings.value = res.data.earnings;
-  nodes.value = res.data.nodes;
-  series.value = [res.data.nodes[0], res.data.nodes[1]];
+  const data = res.data;
+  earnings.value = data.earnings;
+  cost.value = data.cost;
+  roi.value = data.roi;
+  nodes.value = data.nodes;
+  series.value = [data.nodes[0], data.nodes[1]];
 
-  time.value = res.data.time;
-  dailys.value = res.data.dailys;
+  time.value = data.time;
+  dailys.value = data.dailys;
 
-  groups.value = res.data.groups;
+  groups.value = data.groups;
 });
 </script>

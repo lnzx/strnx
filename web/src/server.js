@@ -31,6 +31,8 @@ export function makeServer({ environment = "development" } = {}) {
             })
             this.get('/api/summary', () => {
                 return {
+                  "cost": "2300",
+                  "roi": 250,
                   "earnings": "2300",
                   "nodes": [100,10],
                   "dailys": [34, 45, 20, 69, 33, 98, 23, 33, 10, 33, 70, 100],

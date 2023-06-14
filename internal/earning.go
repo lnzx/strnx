@@ -35,8 +35,14 @@ func FetchNodesEarningJob() {
 	}
 
 	statusMap, err := fetchNodesStatus()
-	if err == nil {
+	if err != nil {
+		log.Println("fetchNodesStatus error:", err)
+	} else {
 		NodeStatusMap = statusMap
+	}
+	if len(NodeStatusMap) == 0 {
+		log.Println("NodeStatusMap 0,skip")
+		return
 	}
 
 	batch := &pgx.Batch{}
@@ -49,6 +55,10 @@ func FetchNodesEarningJob() {
 			batch.Queue(UPSERT_EARN, node.NodeId, node.FilAmount, node.PayoutStatus,
 				status.Speedtest.Isp, geo.Country, geo.City, geo.Region, status.Created)
 		}
+	}
+	if batch.Len() == 0 {
+		log.Println("cron FetchNodesEarningJob batch 0 skip")
+		return
 	}
 	br := pool.SendBatch(context.Background(), batch)
 	if err = br.Close(); err != nil {

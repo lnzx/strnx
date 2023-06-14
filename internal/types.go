@@ -113,3 +113,16 @@ type Group struct {
 	Name    string  `json:"name"`
 	Balance float32 `json:"balance"`
 }
+
+type FilUsd struct {
+	Status struct {
+		ErrorCode int `json:"error_code"`
+	} `json:"status"`
+	Data struct {
+		Quote struct {
+			USD struct {
+				Price float32 `json:"price"`
+			} `json:"USD"`
+		} `json:"quote"`
+	} `json:"data"`
+}

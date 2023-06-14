@@ -12,6 +12,13 @@ import (
 
 func StartAsync() {
 	s := gocron.NewScheduler(time.UTC)
+	// 获取FIL/USD价格
+	if X_CMC_PRO_API_KEY != "" {
+		if _, err := s.Every(1).Days().Do(GetFilUsd); err != nil {
+			log.Println(err)
+		}
+	}
+
 	// 如果配置了发短信,才启动检查版本定时任务
 	if smsApiKey != "" && mobile != "" {
 		_, err := s.Every(5).Minutes().Do(CheckVersionJob)
@@ -43,10 +50,6 @@ func StartAsync() {
 	}); err != nil {
 		log.Println(err)
 	}
-
-	//if _, err := s.Every(10).Minutes().Do(FetchNodesEarningJob); err != nil {
-	//	log.Println(err)
-	//}
 
 	s.StartAsync()
 }

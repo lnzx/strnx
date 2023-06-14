@@ -29,7 +29,7 @@ const series = computed(() => {
 const options = computed(() => {
   return {
     title: {
-      text: "Earnings by Month " + time.value,
+      text: "Earnings by Month " + time.value + " UTC",
       align: "left",
     },
     dataLabels: {

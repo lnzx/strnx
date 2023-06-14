@@ -57,3 +57,11 @@ func SelectNodes() (nodes []Node, err error) {
 	nodes, err = pgx.CollectRows(rows, pgx.RowToStructByName[Node])
 	return nodes, err
 }
+
+func SelectNodesCosts() (costs float32) {
+	err := pool.QueryRow(context.Background(), "SELECT SUM(price) costs FROM node WHERE price > 0").Scan(&costs)
+	if err != nil {
+		log.Println(err)
+	}
+	return 0
+}

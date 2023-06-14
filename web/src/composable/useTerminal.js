@@ -1,7 +1,7 @@
 import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 import { FitAddon } from "xterm-addon-fit";
-//import { AttachAddon } from "xterm-addon-attach";
+import { AttachAddon } from "xterm-addon-attach";
 
 const SHELL_PROMPT = "> ";
 
@@ -14,49 +14,14 @@ function createTerminal(container){
       convertEol: true,
       smoothScrollDuration: 0,
     });
-  
+
+    const socket = new WebSocket('ws://127.0.0.1:8080/attach');
+    const attachAddon = new AttachAddon(socket);
+    term.loadAddon(attachAddon);
+
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
-  
-    //const attachAddon = new AttachAddon(webSocket);
-    //term.loadAddon(attachAddon);
-  
-    term.onKey((key) => {
-      // Track the user input
-      let input = "";
-      console.log("k:", key);
-      const e = key.domEvent;
-      switch (e.key) {
-        case "c":
-          if(e.ctrlKey){
-            prompt(term);
-            input = "";
-            return
-          }
-          break
-          case "l": {
-            if (e.ctrlKey) {
-              term.clear();
-              return;
-            }
-            break;
-          }
-        case "Backspace":
-          input = handleBackspace(term, input)
-          break;
-        case "Enter":
-          input = input.trim();
-          if(input.length === 0){
-            prompt(term);
-            return;
-          }
-          term.writeln("");
-          break;
-        case "ArrowLeft":
-          break;
-      }
-    });
-  
+
     term.onData((key) => {
       console.log("onData key:", key);
       term.write(key);
@@ -88,12 +53,6 @@ const isPrintableKeyCode = (keyCode) => {
     (keyCode >= 186 && keyCode <= 222)
   );
 };
-
-function handleBackspace(term, input) {
-  if (input.length === 0) return input;
-  term.write("\b \b");
-  return input.substring(0, input.length - 1);
-}
 
 export function sleep(delay) {
   return new Promise((resolve) => setTimeout(resolve, delay));
