@@ -15,6 +15,7 @@ CREATE TABLE "public"."wallet" (
       "daily" REAL not null default 0,
       "group" VARCHAR(8) DEFAULT '-'
 );
+CREATE UNIQUE INDEX "wallet_addr" on "public"."wallet"("address");
 
 CREATE TABLE public.earn (
     node_id VARCHAR(36) PRIMARY KEY,
