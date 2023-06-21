@@ -60,7 +60,7 @@ func SelectNodes() (nodes []Node, err error) {
 
 func SelectNodesCosts() float32 {
 	var costs float32
-	err := pool.QueryRow(context.Background(), "SELECT SUM(price) AS costs FROM node WHERE price > 0").Scan(&costs)
+	err := pool.QueryRow(context.Background(), "SELECT COALESCE(SUM(price), 0) AS costs FROM node WHERE price > 0").Scan(&costs)
 	if err != nil {
 		log.Println(err)
 	}
