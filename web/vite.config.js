@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import Vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import VueRouter from 'unplugin-vue-router/vite'
@@ -18,7 +18,8 @@ export default defineConfig({
   },
   plugins: [
     VueRouter(),
-    vue(), // ⚠️ Vue must be placed after VueRouter()
+    // ⚠️ Vue must be placed after VueRouter()
+    Vue(),
     Components(),
     AutoImport({
       imports: [
