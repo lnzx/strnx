@@ -36,6 +36,7 @@ func Summary(c *fiber.Ctx) error {
 		log.Println(err)
 	}
 	cost := SelectNodesCosts()
+
 	return c.JSON(fiber.Map{
 		"nodes":    nodes,
 		"cost":     cost,
@@ -121,6 +122,12 @@ func GetFilUsd() float32 {
 }
 
 func roi(earnings, cost float32) int {
+	if earnings == 0 {
+		return 0
+	}
+	if cost == 0 {
+		cost = 1
+	}
 	earnings = earnings * FILUSD
 	return int((earnings - cost) / cost * 100)
 }
