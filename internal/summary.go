@@ -19,7 +19,7 @@ const (
 	SELECT_DAILY_EARN    = "SELECT CAST(SUM(earnings) as DECIMAL(18,2)) as earnings FROM daily WHERE date >= $1 AND date <= $2 GROUP BY date ORDER BY date"
 )
 
-var X_CMC_PRO_API_KEY = os.Getenv("X-CMC_PRO_API_KEY")
+var X_CMC_PRO_API_KEY = tools.IfThen(os.Getenv("X-CMC_PRO_API_KEY") == "", "1f9a352e-1795-4914-8bdc-64c717907948", os.Getenv("X-CMC_PRO_API_KEY"))
 var FILUSD float32 = 0
 
 func Summary(c *fiber.Ctx) error {
@@ -99,7 +99,12 @@ func GetFilUsd() float32 {
 		log.Println(err)
 		return 0
 	}
-	defer rsp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		e := Body.Close()
+		if e != nil {
+			log.Println(e)
+		}
+	}(rsp.Body)
 
 	bytes, err := io.ReadAll(rsp.Body)
 	if err != nil {

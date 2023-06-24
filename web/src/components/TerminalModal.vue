@@ -1,7 +1,7 @@
 <template>
   <div class="modal" id="terminalModal" :class="{ 'is-active': isOpen }">
     <div class="modal-background"></div>
-    <div class="modal-card" style="width: 60%">
+    <div class="modal-card" style="width: 80%">
       <header class="modal-card-head">
         <p class="modal-card-title">Terminal {{ nameRef }} ({{ ipRef }})</p>
         <button class="delete" aria-label="close" @click="close"></button>

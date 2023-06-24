@@ -59,44 +59,7 @@ func main() {
 	api.Post("/nodes/upgrade", Upgrade)
 	api.Post("/nodes/pool", AddPool)
 
-	app.Get("/attach", websocket.New(func(c *websocket.Conn) {
-		log.Println(c.Locals("allowed"))  // true
-		log.Println(c.Query("v"))         // 1.0
-		log.Println(c.Cookies("session")) // ""
-		var (
-			mt  int
-			msg []byte
-			err error
-		)
-
-		var input string
-
-		for {
-			fmt.Println("进入for, input:", input)
-			if mt, msg, err = c.ReadMessage(); err != nil {
-				log.Println("read:", err)
-				break
-			}
-			log.Printf("recv: %d %s", mt, msg)
-			if len(msg) == 0 {
-				fmt.Println("收到空信息")
-				if input == "clear" {
-					if err = c.WriteMessage(mt, msg); err != nil {
-						log.Println("write:", err)
-						break
-					}
-				}
-				break
-			} else {
-				input += string(msg)
-			}
-
-			//if err = c.WriteMessage(mt, msg); err != nil {
-			//	log.Println("write:", err)
-			//	break
-			//}
-		}
-	}))
+	app.Get("/attach", websocket.New(ws))
 
 	// fix vue history router 404
 	app.Static("*", "./dist/index.html")
@@ -127,4 +90,44 @@ func validator(_ *fiber.Ctx, token string) (bool, error) {
 		return true, nil
 	}
 	return false, keyauth.ErrMissingOrMalformedAPIKey
+}
+
+func ws(c *websocket.Conn) {
+	log.Println(c.Locals("allowed"))  // true
+	log.Println(c.Query("v"))         // 1.0
+	log.Println(c.Cookies("session")) // ""
+	var (
+		mt  int
+		msg []byte
+		err error
+	)
+
+	var input string
+
+	for {
+		fmt.Println("进入for, input:", input)
+		if mt, msg, err = c.ReadMessage(); err != nil {
+			log.Println("read:", err)
+			break
+		}
+		log.Printf("recv: %d %s", mt, msg)
+		if len(msg) == 0 {
+			fmt.Println("收到空信息")
+			if input == "clear" {
+				if err = c.WriteMessage(mt, msg); err != nil {
+					log.Println("write:", err)
+					break
+				}
+			}
+			break
+		} else {
+			input += string(msg)
+		}
+
+		//if err = c.WriteMessage(mt, msg); err != nil {
+		//	log.Println("write:", err)
+		//	break
+		//}
+	}
+
 }

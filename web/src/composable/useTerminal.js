@@ -14,8 +14,9 @@ function createTerminal(container){
       convertEol: true,
       smoothScrollDuration: 0,
     });
-
-    const socket = new WebSocket('ws://127.0.0.1:8080/attach');
+    const host = window.location.hostname
+    const port = window.location.port;
+    const socket = new WebSocket(`ws://${host}:${port}/attach`);
     const attachAddon = new AttachAddon(socket);
     term.loadAddon(attachAddon);
 
@@ -41,7 +42,7 @@ function createTerminal(container){
 
 async function initTerminalSession(term, host){
   term.writeln("Connecting to " + host);
-  await sleep(1300);
+  await sleep(1000);
   term.write(SHELL_PROMPT);
 }
 
