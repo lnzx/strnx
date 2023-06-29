@@ -62,7 +62,7 @@ func FetchNodesEarningJob() {
 	}
 	br := pool.SendBatch(context.Background(), batch)
 	if err = br.Close(); err != nil {
-		log.Println(err)
+		log.Println("br close:", err)
 		return
 	}
 	log.Printf("cron FetchNodesEarningJob started %s\n", time.Now().UTC().Sub(now).String())
