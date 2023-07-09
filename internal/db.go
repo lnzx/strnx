@@ -20,7 +20,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("init db pool")
+	log.Println("init db pool ok")
 }
 
 func SelectWallets() (wallets []Wallet, err error) {
