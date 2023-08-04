@@ -62,20 +62,9 @@ func FetchWalletEarnings(address string, start, end time.Time) (*WalletResult, e
 	url := fmt.Sprintf(WALLET_URL, address, start.UnixMilli(), end.UnixMilli())
 	rsp, err := tools.Get(url)
 	if err != nil {
-		if rsp != nil {
-			e := rsp.Body.Close()
-			if e != nil {
-				log.Println(e)
-			}
-		}
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		e := Body.Close()
-		if e != nil {
-			log.Println(e)
-		}
-	}(rsp.Body)
+	defer rsp.Body.Close()
 
 	bytes, err := io.ReadAll(rsp.Body)
 	if err != nil {

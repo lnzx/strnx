@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var lastVersion = 950
+var lastVersion = 1019
 var smsApiKey = os.Getenv("SMS_API_KEY")
 var mobile = os.Getenv("MOBILE")
 
@@ -24,14 +24,9 @@ func CheckVersionJob() {
 	rsp, err := tools.Get(versionUrl)
 	if err != nil {
 		log.Println(err)
-		if rsp != nil {
-			err = rsp.Body.Close()
-			if err != nil {
-				log.Println(err)
-			}
-		}
 		return
 	}
+	defer rsp.Body.Close()
 	body, err := io.ReadAll(rsp.Body)
 	if err != nil {
 		log.Println(err)
@@ -75,13 +70,9 @@ func sendSms(content string) error {
 
 	rsp, err := tools.Do(req)
 	if err != nil {
-		if rsp != nil {
-			e := rsp.Body.Close()
-			if e != nil {
-				log.Println(e)
-			}
-		}
+		log.Println(err)
 		return err
 	}
+	defer rsp.Body.Close()
 	return nil
 }

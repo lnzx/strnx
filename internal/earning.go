@@ -73,14 +73,10 @@ func fetchNodesEarning(start, end time.Time) ([]PerNodeMetrics, error) {
 	url := fmt.Sprintf(NodesEarningUrl, start.UnixMilli(), end.UnixMilli())
 	rsp, err := tools.Get(url)
 	if err != nil {
-		if rsp != nil {
-			e := rsp.Body.Close()
-			if e != nil {
-				log.Println(e)
-			}
-		}
+		log.Println(err)
 		return nil, err
 	}
+	defer rsp.Body.Close()
 
 	bytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
@@ -103,13 +99,10 @@ func fetchNodesStatus() (map[string]Status, error) {
 
 	rsp, err := tools.Do(req)
 	if err != nil {
-		if rsp != nil {
-			if e := rsp.Body.Close(); e != nil {
-				log.Println(e)
-			}
-		}
+		log.Println(err)
 		return nil, err
 	}
+	defer rsp.Body.Close()
 
 	bytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
